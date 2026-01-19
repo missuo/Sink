@@ -45,6 +45,18 @@ function handleRealtimeFilterChange(type: string, value: string) {
     </template>
   </template>
 
+  <template v-else-if="page === 'link'">
+    <template v-if="!mobileSearch">
+      <div
+        class="
+          flex-1
+          sm:hidden
+        "
+      />
+      <DashboardDatePicker @update:date-range="handleDateChange" />
+    </template>
+  </template>
+
   <template v-else-if="page === 'analysis'">
     <template v-if="!mobileSearch">
       <div
