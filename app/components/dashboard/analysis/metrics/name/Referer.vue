@@ -15,7 +15,7 @@ defineProps<{
       class="float-left h-5 w-5 p-0.5"
     >
       <AvatarImage
-        :src="`https://unavatar.io/${name}?fallback=false`"
+        :src="`https://unavatar.webp.se/${name}?fallback=false`"
         :alt="name"
         loading="lazy"
       />

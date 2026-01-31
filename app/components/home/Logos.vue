@@ -15,6 +15,9 @@
           "
           alt="Cloudflare"
           src="@/assets/images/cloudflare.png"
+          fetchpriority="high"
+          width="350"
+          height="176"
         >
         <img
           class="
@@ -24,6 +27,9 @@
           "
           alt="Nuxt.js"
           src="@/assets/images/nuxtjs.png"
+          fetchpriority="high"
+          width="350"
+          height="176"
         >
       </div>
     </div>

@@ -119,7 +119,7 @@ const { stats } = useGithubStats()
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 pt-20">
+    <main class="flex flex-1 flex-col pt-20">
       <slot />
     </main>
 

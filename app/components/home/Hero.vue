@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight } from 'lucide-vue-next'
 import { GitHubIcon, XIcon } from 'vue3-simple-icons'
-import heroImg from '@/assets/images/hero.svg?raw'
+import heroUrl from '@/assets/images/hero.svg?url'
 
 const { title, description, github, twitter } = useAppConfig()
 </script>
@@ -99,13 +99,16 @@ const { title, description, github, twitter } = useAppConfig()
           </div>
         </div>
 
-        <div
+        <object
+          type="image/svg+xml"
+          :data="heroUrl"
           class="
-            hidden w-96 shrink-0
-            md:flex md:items-center md:justify-center
+            hidden aspect-square w-96 shrink-0
+            md:block
             lg:w-[420px]
           "
-          v-html="heroImg"
+          aria-label="Link sharing illustration"
+          suppressHydrationWarning
         />
       </div>
     </div>

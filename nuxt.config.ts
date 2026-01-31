@@ -109,9 +109,6 @@ export default defineNuxtConfig({
     strict: false,
     tsConfig: {
       include: ['../schemas/**/*'],
-      vueCompilerOptions: {
-        skipTemplateCodegen: true,
-      },
     },
   },
   eslint: {

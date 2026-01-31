@@ -32,6 +32,15 @@ const { Meta_K, Ctrl_K } = useMagicKeys({
   },
 })
 
+function sanitizeSlotAttrs(attrs?: Record<string, unknown>) {
+  if (!attrs)
+    return {}
+
+  return Object.fromEntries(
+    Object.entries(attrs).filter(([key]) => !key.startsWith('$')),
+  ) as Record<string, unknown>
+}
+
 watch([Meta_K, Ctrl_K], (v) => {
   if (v[0] || v[1])
     isOpen.value = true
@@ -64,7 +73,7 @@ onMounted(() => {
 <template>
   <TriggerTemplate v-slot="attrs">
     <Button
-      v-bind="attrs"
+      v-bind="sanitizeSlotAttrs(attrs)"
       variant="outline"
       size="sm"
       class="

@@ -55,7 +55,7 @@ const typedTestimonials = testimonials as Testimonial[]
                 <Avatar class="size-9">
                   <AvatarImage
                     :alt="testimonial.name"
-                    :src="`https://unavatar.io/x/${testimonial.username}`"
+                    :src="`https://unavatar.webp.se/x/${testimonial.username}`"
                     loading="lazy"
                     referrerpolicy="no-referrer"
                   />
