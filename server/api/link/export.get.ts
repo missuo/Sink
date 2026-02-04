@@ -1,13 +1,4 @@
-import type { Link } from '@@/app/types'
-
-interface ExportData {
-  version: string
-  exportedAt: string
-  count: number
-  links: Link[]
-  cursor?: string
-  list_complete: boolean
-}
+import type { ExportData, Link } from '@@/schemas/link'
 
 export default eventHandler(async (event) => {
   const query = getQuery(event)

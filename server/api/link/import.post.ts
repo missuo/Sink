@@ -1,20 +1,6 @@
+import type { ImportResult } from '@@/schemas/import'
 import { ImportDataSchema } from '@@/schemas/import'
 import { nanoid } from '@@/schemas/link'
-
-interface ImportResultItem {
-  index: number
-  slug: string
-  url: string
-}
-
-interface ImportResult {
-  success: number
-  skipped: number
-  failed: number
-  successItems: ImportResultItem[]
-  skippedItems: ImportResultItem[]
-  failedItems: (ImportResultItem & { reason: string })[]
-}
 
 export default eventHandler(async (event) => {
   const kvBatchLimit = useRuntimeConfig(event).public.kvBatchLimit as string
@@ -40,6 +26,17 @@ export default eventHandler(async (event) => {
 
   for (let i = 0; i < importData.links.length; i++) {
     const linkData = importData.links[i]
+
+    if (!linkData) {
+      result.failed++
+      result.failedItems.push({
+        index: i,
+        slug: '',
+        url: '',
+        reason: 'Missing link data',
+      })
+      continue
+    }
 
     try {
       const slug = normalizeSlug(event, linkData.slug)

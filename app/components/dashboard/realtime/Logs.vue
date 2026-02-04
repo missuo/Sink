@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { LogEvent } from '@/types'
-import AnimatedList from '@/components/spark-ui/AnimatedList.vue'
-import Notification from '@/components/spark-ui/Notification.vue'
+import type { TrafficEventParams } from '@/utils/events'
 
 const realtimeStore = useDashboardRealtimeStore()
-const logs = ref<LogEvent[]>([])
+const logs = shallowRef<LogEvent[]>([])
 const logskey = ref(0)
 
 async function getEvents() {
@@ -30,24 +29,26 @@ onMounted(async () => {
   getEvents()
 })
 
-function onUpdateItems(...args) {
-  globalTrafficEvent.emit(...args)
+function onUpdateItems(item: unknown, props: { delay?: number }) {
+  if (item && typeof item === 'object' && 'props' in item) {
+    globalTrafficEvent.emit(item as TrafficEventParams, props)
+  }
 }
 </script>
 
 <template>
-  <AnimatedList v-if="logs.length" :key="logskey" class="md:w-72" @update:items="onUpdateItems">
+  <SparkUiAnimatedList v-if="logs.length" :key="logskey" class="md:w-72" @update:items="onUpdateItems">
     <template #default>
-      <Notification
+      <SparkUiNotification
         v-for="item in logs"
         :key="item.id"
         :name="item.slug"
         :description="[item.os, item.browser].filter(Boolean).join(' ')"
-        :icon="getFlag(item.country)"
+        :icon="getFlag(item.country || '')"
         :time="item.timestamp"
         :item="item"
         class="w-full"
       />
     </template>
-  </AnimatedList>
+  </SparkUiAnimatedList>
 </template>

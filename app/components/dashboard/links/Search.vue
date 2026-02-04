@@ -58,7 +58,7 @@ function selectLink(link: Link | undefined) {
 
 async function getLinks() {
   try {
-    links.value = await useAPI('/api/link/search') as Link[]
+    links.value = await useAPI<Link[]>('/api/link/search')
   }
   catch (error) {
     console.error(error)
@@ -108,7 +108,7 @@ onMounted(() => {
   </TriggerTemplate>
   <SearchTemplate>
     <Command class="h-auto">
-      <CommandInput v-model="searchTerm" :placeholder="$t('links.search_placeholder')" />
+      <CommandInput v-model="searchTerm" :placeholder="$t('links.search_placeholder')" autocomplete="off" />
     </Command>
     <!-- disable command search -->
     <Command class="flex-1">

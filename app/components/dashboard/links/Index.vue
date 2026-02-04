@@ -35,12 +35,12 @@ const displayedLinks = computed(() => {
 
 async function getLinks() {
   try {
-    const data = await useAPI('/api/link/list', {
+    const data = await useAPI<LinkListResponse>('/api/link/list', {
       query: {
         limit,
         cursor,
       },
-    }) as LinkListResponse
+    })
     links.value = links.value.concat(data.links).filter(Boolean)
     cursor = data.cursor
     listComplete.value = data.list_complete
@@ -79,12 +79,8 @@ function updateLinkList(link: Link, type: LinkUpdateType) {
   }
 }
 
-const unsubscribe = linksStore.onLinkUpdate(({ link, type }) => {
+linksStore.onLinkUpdate(({ link, type }) => {
   updateLinkList(link, type)
-})
-
-onUnmounted(() => {
-  unsubscribe()
 })
 </script>
 

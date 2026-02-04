@@ -162,64 +162,44 @@ async function handleImport() {
   }
 }
 
-function downloadSuccessItems() {
-  if (!importResult.value || importResult.value.successItems.length === 0)
+function downloadItems(
+  items: ImportResultItem[] | undefined,
+  filename: string,
+  transform?: (item: ImportResultItem, originalLink: unknown) => unknown,
+) {
+  if (!items || items.length === 0)
     return
 
-  const successLinks = importResult.value.successItems.map((item) => {
+  const links = items.map((item) => {
     const originalLink = parsedData.value?.links[item.index]
-    return { ...originalLink }
+    return transform ? transform(item, originalLink) : { ...originalLink }
   })
 
-  const exportData = {
+  saveAsJson({
     version: '1.0',
     exportedAt: new Date().toISOString(),
-    count: successLinks.length,
-    links: successLinks,
-  }
+    count: links.length,
+    links,
+  }, `sink-import-${filename}-${Date.now()}.json`)
+}
 
-  saveAsJson(exportData, `sink-import-success-${Date.now()}.json`)
+function downloadSuccessItems() {
+  downloadItems(importResult.value?.successItems, 'success')
 }
 
 function downloadSkippedItems() {
-  if (!importResult.value || importResult.value.skippedItems.length === 0)
-    return
-
-  const skippedLinks = importResult.value.skippedItems.map((item) => {
-    const originalLink = parsedData.value?.links[item.index]
-    return { ...originalLink }
-  })
-
-  const exportData = {
-    version: '1.0',
-    exportedAt: new Date().toISOString(),
-    count: skippedLinks.length,
-    links: skippedLinks,
-  }
-
-  saveAsJson(exportData, `sink-import-skipped-${Date.now()}.json`)
+  downloadItems(importResult.value?.skippedItems, 'skipped')
 }
 
 function downloadFailedItems() {
-  if (!importResult.value || importResult.value.failedItems.length === 0)
-    return
-
-  const failedLinks = importResult.value.failedItems.map((item) => {
-    const originalLink = parsedData.value?.links[item.index]
-    return {
-      ...originalLink,
-      _importError: item.reason,
-    }
-  })
-
-  const exportData = {
-    version: '1.0',
-    exportedAt: new Date().toISOString(),
-    count: failedLinks.length,
-    links: failedLinks,
-  }
-
-  saveAsJson(exportData, `sink-import-failed-${Date.now()}.json`)
+  downloadItems(
+    importResult.value?.failedItems,
+    'failed',
+    (item, originalLink) => ({
+      ...(originalLink as object),
+      _importError: (item as ImportResultItem & { reason: string }).reason,
+    }),
+  )
 }
 
 function reset() {

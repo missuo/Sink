@@ -51,10 +51,12 @@ onMounted(async () => {
         <CardTitle class="text-sm font-medium">
           {{ $t('dashboard.visits') }}
         </CardTitle>
-        <MousePointerClick class="h-4 w-4 text-muted-foreground" />
+        <MousePointerClick
+          aria-hidden="true" class="h-4 w-4 text-muted-foreground"
+        />
       </CardHeader>
       <CardContent>
-        <NumberFlow class="text-2xl font-bold" :class="{ 'opacity-60 blur-md': !counters.visits }" :value="counters.visits" />
+        <NumberFlow class="text-2xl font-bold tabular-nums" :class="{ 'opacity-60 blur-md': !counters.visits }" :value="counters.visits" />
       </CardContent>
     </Card>
     <Card class="gap-0">
@@ -64,10 +66,10 @@ onMounted(async () => {
         <CardTitle class="text-sm font-medium">
           {{ $t('dashboard.visitors') }}
         </CardTitle>
-        <Users class="h-4 w-4 text-muted-foreground" />
+        <Users aria-hidden="true" class="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <NumberFlow class="text-2xl font-bold" :class="{ 'opacity-60 blur-md': !counters.visitors }" :value="counters.visitors" />
+        <NumberFlow class="text-2xl font-bold tabular-nums" :class="{ 'opacity-60 blur-md': !counters.visitors }" :value="counters.visitors" />
       </CardContent>
     </Card>
     <Card class="gap-0">
@@ -77,10 +79,10 @@ onMounted(async () => {
         <CardTitle class="text-sm font-medium">
           {{ $t('dashboard.referers') }}
         </CardTitle>
-        <Flame class="h-4 w-4 text-muted-foreground" />
+        <Flame aria-hidden="true" class="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <NumberFlow class="text-2xl font-bold" :class="{ 'opacity-60 blur-md': !counters.referers }" :value="counters.referers" />
+        <NumberFlow class="text-2xl font-bold tabular-nums" :class="{ 'opacity-60 blur-md': !counters.referers }" :value="counters.referers" />
       </CardContent>
     </Card>
   </div>

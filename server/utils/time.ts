@@ -11,3 +11,17 @@ export function getExpiration(event: H3Event, expiration: number | undefined) {
 
   return expiration
 }
+
+export function isValidTimezone(tz: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz })
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+export function getSafeTimezone(tz: string): string {
+  return isValidTimezone(tz) ? tz : 'Etc/UTC'
+}

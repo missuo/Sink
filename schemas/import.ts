@@ -1,19 +1,17 @@
 import { z } from 'zod'
 
-const { slugRegex } = useAppConfig()
+import { LinkSchema } from './link'
 
-const ImportLinkSchema = z.object({
-  id: z.string().trim().max(26).optional(),
-  url: z.string().trim().url().max(2048),
-  slug: z.string().trim().max(2048).regex(new RegExp(slugRegex)),
-  comment: z.string().trim().max(2048).optional(),
-  createdAt: z.number().int().safe().optional(),
-  updatedAt: z.number().int().safe().optional(),
-  expiration: z.number().int().safe().optional(),
-  title: z.string().trim().max(2048).optional(),
-  description: z.string().trim().max(2048).optional(),
-  image: z.string().trim().url().max(2048).optional(),
-})
+// Import uses LinkSchema but:
+// - Removes defaults (id, slug, createdAt, updatedAt have defaults in LinkSchema)
+// - Removes expiration refinement (imported links may have past expiration)
+// - Makes id optional, slug required
+const ImportLinkSchema = LinkSchema
+  .omit({ expiration: true })
+  .extend({
+    id: z.string().trim().max(26).optional(),
+    expiration: z.number().int().safe().optional(),
+  })
 
 export const ImportDataSchema = z.object({
   version: z.string(),
@@ -24,3 +22,18 @@ export const ImportDataSchema = z.object({
 
 export type ImportData = z.infer<typeof ImportDataSchema>
 export type ImportLink = z.infer<typeof ImportLinkSchema>
+
+export interface ImportResultItem {
+  index: number
+  slug: string
+  url: string
+}
+
+export interface ImportResult {
+  success: number
+  skipped: number
+  failed: number
+  successItems: ImportResultItem[]
+  skippedItems: ImportResultItem[]
+  failedItems: (ImportResultItem & { reason: string })[]
+}

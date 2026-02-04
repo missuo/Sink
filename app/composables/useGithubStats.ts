@@ -1,3 +1,6 @@
+import { useAppConfig, useFetch } from '#imports'
+import { computed } from 'vue'
+
 export function useGithubStats() {
   const { github } = useAppConfig()
   const repo = github.replace('https://github.com/', '')
@@ -13,7 +16,11 @@ export function useGithubStats() {
         stars: res.stargazers_count,
         forks: res.forks_count,
       }),
-      getCachedData: key => useNuxtApp().payload.data[key],
+      getCachedData: (key, nuxtApp) => nuxtApp.payload?.data?.[key] ?? nuxtApp.static?.data?.[key],
+      onResponseError: ({ response }) => {
+        // Silently handle GitHub API errors (rate limit, network issues, etc.)
+        console.warn(`[useGithubStats] GitHub API error: ${response.status}`)
+      },
     },
   )
 

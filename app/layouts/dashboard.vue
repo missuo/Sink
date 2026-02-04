@@ -41,7 +41,7 @@ useSeoMeta({
                 data-[orientation=vertical]:h-4
               "
             />
-            <DashboardPageBreadcrumb :title="$t(pageTitle)" />
+            <DashboardPageBreadcrumb :title="$t(pageTitle ?? 'dashboard.title')" />
           </div>
 
           <div class="flex flex-1 items-center justify-end gap-2">

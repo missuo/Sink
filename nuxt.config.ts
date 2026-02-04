@@ -84,29 +84,8 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            // Three.js core as separate chunk
-            if (id.includes('node_modules/three/')) {
-              return 'three'
-            }
-            // Globe related libraries as separate chunk
-            if (id.includes('node_modules/globe.gl') || id.includes('node_modules/three-globe')) {
-              return 'globe'
-            }
-            // D3 scale related libraries as separate chunk
-            if (id.includes('node_modules/d3-scale') || id.includes('node_modules/d3-interpolate') || id.includes('node_modules/d3-color')) {
-              return 'd3'
-            }
-          },
-        },
-      },
-    },
   },
   typescript: {
-    strict: false,
     tsConfig: {
       include: ['../schemas/**/*'],
     },

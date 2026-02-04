@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CounterData } from '@/types'
 import NumberFlow from '@number-flow/vue'
+import { watchDeep } from '@vueuse/core'
 import { MousePointerClick } from 'lucide-vue-next'
 
 provide(LINK_ID_KEY, computed(() => undefined))
@@ -23,9 +24,7 @@ async function getRealtimeStats() {
   stats.value = result.data?.[0] || { visits: 0, visitors: 0, referers: 0 }
 }
 
-watch([() => realtimeStore.timeRange, () => realtimeStore.filters], getRealtimeStats, {
-  deep: true,
-})
+watchDeep([() => realtimeStore.timeRange, () => realtimeStore.filters], getRealtimeStats)
 
 onMounted(() => {
   getRealtimeStats()

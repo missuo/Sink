@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  tabs: string[]
-  rawTabs: string[]
+  tabs: readonly string[]
+  rawTabs: readonly string[]
 }>()
 </script>
 
@@ -14,7 +14,7 @@ defineProps<{
       <TabsTrigger
         v-for="(tab, index) in tabs"
         :key="tab"
-        :value="rawTabs[index]"
+        :value="rawTabs[index]!"
       >
         {{ tab }}
       </TabsTrigger>
@@ -22,11 +22,11 @@ defineProps<{
     <TabsContent
       v-for="(tab, index) in tabs"
       :key="tab"
-      :value="rawTabs[index]"
+      :value="rawTabs[index]!"
       class="flex-1"
     >
       <DashboardAnalysisMetricsMetric
-        :type="rawTabs[index]"
+        :type="rawTabs[index]!"
         :name="tab"
         class="h-full"
       />

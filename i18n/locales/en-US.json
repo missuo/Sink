@@ -95,6 +95,30 @@
       "link_expiration": {
         "title": "Link Expiration",
         "description": "Set expiration dates for your links"
+      },
+      "device_routing": {
+        "title": "Device Routing",
+        "description": "Redirect iOS/Android users to App Store links"
+      },
+      "og_preview": {
+        "title": "Social Preview",
+        "description": "Custom OpenGraph previews for social media"
+      },
+      "realtime_analytics": {
+        "title": "Real-time Analytics",
+        "description": "Live 3D globe and real-time event logs"
+      },
+      "qr_code": {
+        "title": "QR Code",
+        "description": "Generate QR codes for your short links"
+      },
+      "import_export": {
+        "title": "Import/Export",
+        "description": "Bulk migration via JSON files"
+      },
+      "multi_language": {
+        "title": "Multi-language",
+        "description": "Full i18n support for the dashboard"
       }
     },
     "cta": {
@@ -126,6 +150,8 @@
     "visitors": "Visitors",
     "referers": "Referers",
     "stats": "'s Stats",
+    "trend": "Trend",
+    "weekly_trend": "Weekly Trend",
     "custom_date": "Custom Date",
     "date": "Date",
     "date_range": "Date Range",
@@ -201,7 +227,25 @@
       "slug": "Slug",
       "comment": "Comment",
       "expiration": "Expiration",
-      "pick_date": "Pick a date"
+      "pick_date": "Pick a date",
+      "device_redirect": "Device Redirect",
+      "google_play": "Google Play URL",
+      "app_store": "App Store URL",
+      "og_settings": "OpenGraph Settings",
+      "og_title": "Title",
+      "og_title_placeholder": "Leave empty to use URL hostname",
+      "og_description": "Description",
+      "og_description_placeholder": "Link description",
+      "og_image": "Image",
+      "advanced": "Advanced",
+      "more_options": "More Options",
+      "image_invalid_type": "Please upload an image file",
+      "image_size_limit": "Image size cannot exceed 5MB",
+      "image_upload_success": "Image uploaded successfully",
+      "image_upload_failed": "Failed to upload image",
+      "image_upload_hint": "Click or drag to upload image",
+      "image_ratio_hint": "Recommended: 1200×630",
+      "slug_required": "Please enter a slug first"
     },
     "sort": {
       "newest": "Newest First",

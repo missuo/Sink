@@ -95,6 +95,30 @@
       "link_expiration": {
         "title": "Hết hạn liên kết",
         "description": "Đặt ngày hết hạn cho liên kết"
+      },
+      "device_routing": {
+        "title": "Điều hướng thiết bị",
+        "description": "Chuyển hướng người dùng iOS/Android đến App Store"
+      },
+      "og_preview": {
+        "title": "Xem trước mạng xã hội",
+        "description": "Tùy chỉnh OpenGraph cho mạng xã hội"
+      },
+      "realtime_analytics": {
+        "title": "Phân tích thời gian thực",
+        "description": "Địa cầu 3D trực tiếp và nhật ký sự kiện"
+      },
+      "qr_code": {
+        "title": "Mã QR",
+        "description": "Tạo mã QR cho liên kết rút gọn"
+      },
+      "import_export": {
+        "title": "Nhập/Xuất",
+        "description": "Di chuyển hàng loạt qua tệp JSON"
+      },
+      "multi_language": {
+        "title": "Đa ngôn ngữ",
+        "description": "Hỗ trợ i18n đầy đủ cho bảng điều khiển"
       }
     },
     "cta": {
@@ -107,6 +131,16 @@
     },
     "twitter": {
       "follow": "Theo dõi tôi trên X (Twitter)"
+    },
+    "stats": {
+      "title": "Số liệu Sink",
+      "subtitle": "Được tin dùng bởi các nhà phát triển trên toàn thế giới",
+      "stars": "Stars trên GitHub",
+      "forks": "Forks"
+    },
+    "testimonials": {
+      "title": "Người dùng yêu thích",
+      "subtitle": "Xem các nhà phát triển nói gì về Sink"
     }
   },
   "dashboard": {
@@ -116,6 +150,8 @@
     "visitors": "Khách truy cập",
     "referers": "Nguồn giới thiệu",
     "stats": "Thống kê của",
+    "trend": "Xu hướng",
+    "weekly_trend": "Xu hướng tuần",
     "custom_date": "Ngày tùy chỉnh",
     "date": "Ngày",
     "date_range": "Khoảng ngày",
@@ -191,7 +227,25 @@
       "slug": "Slug",
       "comment": "Ghi chú",
       "expiration": "Hết hạn",
-      "pick_date": "Chọn ngày"
+      "pick_date": "Chọn ngày",
+      "device_redirect": "Chuyển hướng theo thiết bị",
+      "google_play": "URL Google Play",
+      "app_store": "URL App Store",
+      "og_settings": "Cài đặt OpenGraph",
+      "og_title": "Tiêu đề",
+      "og_title_placeholder": "Để trống sẽ sử dụng tên miền URL",
+      "og_description": "Mô tả",
+      "og_description_placeholder": "Mô tả liên kết",
+      "og_image": "Hình ảnh",
+      "advanced": "Nâng cao",
+      "more_options": "Thêm tùy chọn",
+      "image_invalid_type": "Vui lòng tải lên tệp hình ảnh",
+      "image_size_limit": "Kích thước hình ảnh không được vượt quá 5MB",
+      "image_upload_success": "Tải lên hình ảnh thành công",
+      "image_upload_failed": "Tải lên hình ảnh thất bại",
+      "image_upload_hint": "Nhấp hoặc kéo thả để tải lên hình ảnh",
+      "image_ratio_hint": "Khuyến nghị: 1200×630",
+      "slug_required": "Vui lòng nhập slug trước"
     },
     "sort": {
       "newest": "Mới nhất trước",

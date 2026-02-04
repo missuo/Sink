@@ -95,6 +95,30 @@
       "link_expiration": {
         "title": "Expiration des liens",
         "description": "Définissez des dates d'expiration pour vos liens"
+      },
+      "device_routing": {
+        "title": "Routage par appareil",
+        "description": "Redirigez les utilisateurs iOS/Android vers les stores d'apps"
+      },
+      "og_preview": {
+        "title": "Aperçu social",
+        "description": "Aperçus OpenGraph personnalisés pour les réseaux sociaux"
+      },
+      "realtime_analytics": {
+        "title": "Analyses en temps réel",
+        "description": "Globe 3D en direct et journaux d'événements"
+      },
+      "qr_code": {
+        "title": "Code QR",
+        "description": "Générez des codes QR pour vos liens courts"
+      },
+      "import_export": {
+        "title": "Import/Export",
+        "description": "Migration en masse via fichiers JSON"
+      },
+      "multi_language": {
+        "title": "Multilingue",
+        "description": "Support i18n complet pour le tableau de bord"
       }
     },
     "cta": {
@@ -107,6 +131,16 @@
     },
     "twitter": {
       "follow": "Suivez-moi sur X(Twitter)"
+    },
+    "stats": {
+      "title": "Sink en chiffres",
+      "subtitle": "Approuvé par les développeurs du monde entier",
+      "stars": "Stars sur GitHub",
+      "forks": "Forks"
+    },
+    "testimonials": {
+      "title": "Aimé par les utilisateurs",
+      "subtitle": "Découvrez ce que disent les développeurs à propos de Sink"
     }
   },
   "dashboard": {
@@ -116,6 +150,8 @@
     "visitors": "Visiteurs",
     "referers": "Referrers",
     "stats": "Statistiques",
+    "trend": "Tendance",
+    "weekly_trend": "Tendance hebdomadaire",
     "custom_date": "Date personnalisée",
     "date": "Date",
     "date_range": "Intervalle de temps",
@@ -191,7 +227,25 @@
       "slug": "Slug",
       "comment": "Commentaire",
       "expiration": "Expiration",
-      "pick_date": "Choisir une date"
+      "pick_date": "Choisir une date",
+      "device_redirect": "Redirection par appareil",
+      "google_play": "URL Google Play",
+      "app_store": "URL App Store",
+      "og_settings": "Paramètres OpenGraph",
+      "og_title": "Titre",
+      "og_title_placeholder": "Laisser vide pour utiliser le nom de domaine",
+      "og_description": "Description",
+      "og_description_placeholder": "Description du lien",
+      "og_image": "Image",
+      "advanced": "Avancé",
+      "more_options": "Plus d'options",
+      "image_invalid_type": "Veuillez télécharger un fichier image",
+      "image_size_limit": "La taille de l'image ne peut pas dépasser 5 Mo",
+      "image_upload_success": "Image téléchargée avec succès",
+      "image_upload_failed": "Échec du téléchargement de l'image",
+      "image_upload_hint": "Cliquez ou glissez pour télécharger une image",
+      "image_ratio_hint": "Recommandé : 1200×630",
+      "slug_required": "Veuillez d'abord entrer un slug"
     },
     "sort": {
       "newest": "Les plus récents",

@@ -8,8 +8,8 @@ const showGlobe = ref(false)
 
 const { stop } = useIntersectionObserver(
   globeContainer,
-  ([{ isIntersecting }]) => {
-    if (isIntersecting) {
+  ([entry]) => {
+    if (entry?.isIntersecting) {
       showGlobe.value = true
       stop()
     }

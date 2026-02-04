@@ -95,6 +95,30 @@
       "link_expiration": {
         "title": "链接过期",
         "description": "为您的链接设置过期日期"
+      },
+      "device_routing": {
+        "title": "设备路由",
+        "description": "iOS/Android 用户自动跳转应用商店"
+      },
+      "og_preview": {
+        "title": "社交预览",
+        "description": "自定义社交媒体 OpenGraph 预览"
+      },
+      "realtime_analytics": {
+        "title": "实时分析",
+        "description": "3D 地球可视化和实时事件日志"
+      },
+      "qr_code": {
+        "title": "二维码",
+        "description": "为短链生成二维码"
+      },
+      "import_export": {
+        "title": "导入/导出",
+        "description": "通过 JSON 文件批量迁移"
+      },
+      "multi_language": {
+        "title": "多语言",
+        "description": "仪表盘完整的国际化支持"
       }
     },
     "cta": {
@@ -126,6 +150,8 @@
     "visitors": "访客数",
     "referers": "引荐来源",
     "stats": "的统计",
+    "trend": "趋势",
+    "weekly_trend": "周度趋势",
     "custom_date": "自定义日期",
     "date": "日期",
     "date_range": "日期范围",
@@ -201,7 +227,25 @@
       "slug": "短链",
       "comment": "备注",
       "expiration": "过期时间",
-      "pick_date": "选择日期"
+      "pick_date": "选择日期",
+      "device_redirect": "设备跳转",
+      "google_play": "Google Play 链接",
+      "app_store": "App Store 链接",
+      "og_settings": "OpenGraph 设置",
+      "og_title": "标题",
+      "og_title_placeholder": "留空则使用 URL 域名",
+      "og_description": "描述",
+      "og_description_placeholder": "链接描述",
+      "og_image": "图片",
+      "advanced": "高级设置",
+      "more_options": "更多选项",
+      "image_invalid_type": "请上传图片文件",
+      "image_size_limit": "图片大小不能超过 5MB",
+      "image_upload_success": "图片上传成功",
+      "image_upload_failed": "图片上传失败",
+      "image_upload_hint": "点击或拖拽上传图片",
+      "image_ratio_hint": "推荐尺寸：1200×630",
+      "slug_required": "请先输入短链"
     },
     "sort": {
       "newest": "最新",

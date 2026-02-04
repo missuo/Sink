@@ -1,5 +1,7 @@
+import { defineStore } from '#imports'
 import { useUrlSearchParams } from '@vueuse/core'
 import { safeDestr } from 'destr'
+import { ref } from 'vue'
 
 export const useDashboardAnalysisStore = defineStore('dashboard-analysis', () => {
   const searchParams = useUrlSearchParams('history')
@@ -31,25 +33,18 @@ export const useDashboardAnalysisStore = defineStore('dashboard-analysis', () =>
   }
 
   function restoreFromUrl() {
-    try {
-      if (searchParams.time) {
-        const time = safeDestr<{ startAt: number, endAt: number }>(searchParams.time)
-        if (Number.isFinite(time?.startAt) && Number.isFinite(time?.endAt)) {
-          dateRange.value.startAt = time.startAt
-          dateRange.value.endAt = time.endAt
-        }
-      }
-      if (searchParams.filters) {
-        const restored = safeDestr<Record<string, string>>(searchParams.filters)
-        if (restored) {
-          Object.entries(restored).forEach(([key, value]) => {
-            filters.value[key] = String(value)
-          })
-        }
+    if (searchParams.time) {
+      const time = safeDestr<{ startAt: number, endAt: number }>(searchParams.time)
+      if (Number.isFinite(time?.startAt) && Number.isFinite(time?.endAt)) {
+        dateRange.value.startAt = time.startAt
+        dateRange.value.endAt = time.endAt
       }
     }
-    catch (error) {
-      console.error('Failed to restore analysis searchParams', error)
+    if (searchParams.filters) {
+      const restored = safeDestr<Record<string, string>>(searchParams.filters)
+      if (restored) {
+        Object.assign(filters.value, restored)
+      }
     }
   }
 

@@ -11,6 +11,6 @@ definePageMeta({
       md:h-full md:overflow-hidden
     "
   >
-    <DashboardRealtime />
+    <LazyDashboardRealtime />
   </main>
 </template>

@@ -8,19 +8,7 @@ const colorMode = useColorMode()
 const { setLocale, locales } = useI18n()
 const { state } = useSidebar()
 
-const repo = github.replace('https://github.com/', '')
-const { data: stars, status } = await useFetch(
-  `https://api.github.com/repos/${repo}`,
-  {
-    transform: (res: { stargazers_count: number }) => res.stargazers_count,
-    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] || nuxtApp.static.data[key],
-  },
-)
-const formattedStars = computed(() => {
-  if (!stars.value)
-    return null
-  return stars.value.toLocaleString()
-})
+const { stats, status } = useGithubStats()
 </script>
 
 <template>
@@ -53,11 +41,11 @@ const formattedStars = computed(() => {
                     <template v-if="state !== 'collapsed'">
                       <Skeleton v-if="status === 'pending'" class="h-4 w-8" />
                       <span
-                        v-else-if="formattedStars" class="
+                        v-else class="
                           text-xs text-muted-foreground tabular-nums
                         "
                       >
-                        {{ formattedStars }} {{ $t('sidebar.stars') }}
+                        {{ stats.stars }} {{ $t('sidebar.stars') }}
                       </span>
                     </template>
                   </a>

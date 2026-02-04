@@ -21,7 +21,7 @@ const selectedLinks = ref<string[]>([])
 
 async function getLinks() {
   try {
-    links.value = await useAPI('/api/link/search')
+    links.value = await useAPI<Link[]>('/api/link/search')
   }
   catch (error) {
     console.error(error)

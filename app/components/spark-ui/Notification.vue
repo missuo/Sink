@@ -9,26 +9,24 @@ const props = defineProps<{
   color?: string
   time: number
 }>()
-
-const className = cn(
-  'relative mx-auto my-1 min-h-fit w-full cursor-pointer rounded-2xl border',
-  // animation styles
-  `
-    transform-gpu transition-all duration-200 ease-in-out
-    hover:scale-[103%]
-  `,
-  // light styles
-  'bg-white',
-  // dark styles
-  `
-    dark:bg-transparent dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]
-    dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)]
-  `,
-)
 </script>
 
 <template>
-  <figure :class="className">
+  <figure
+    :class="cn(
+      'relative mx-auto my-1 min-h-fit w-full cursor-pointer rounded-2xl border',
+      `
+        transform-gpu transition-transform duration-200 ease-in-out
+        hover:scale-[103%]
+      `,
+      'bg-white',
+      `
+        dark:bg-transparent dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]
+        dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)]
+      `,
+      props.class,
+    )"
+  >
     <div class="flex flex-row items-center gap-2 px-2 py-2">
       <div
         class="flex size-10 items-center justify-center rounded-2xl"

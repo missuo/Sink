@@ -62,34 +62,20 @@ onMounted(() => {
         />
       </CardContent>
       <CardFooter class="py-2">
-        <Dialog>
-          <DialogTrigger
-            as-child
-            class="w-full"
-          >
-            <Button
-              variant="link"
-            >
+        <ResponsiveModal :title="name" content-class="md:max-w-(--breakpoint-md)">
+          <template #trigger>
+            <Button variant="link" class="w-full">
               <Maximize class="mr-2 h-4 w-4" />
               {{ $t('dashboard.details') }}
             </Button>
-          </DialogTrigger>
-          <DialogContent
-            class="
-              max-h-[95svh] max-w-[95svw] grid-rows-[auto_minmax(0,1fr)_auto]
-              md:max-w-(--breakpoint-md)
-            "
-          >
-            <DialogHeader>
-              <DialogTitle>{{ name }}</DialogTitle>
-            </DialogHeader>
-            <DashboardAnalysisMetricsList
-              class="overflow-y-auto"
-              :metrics="metrics"
-              :type="type"
-            />
-          </DialogContent>
-        </Dialog>
+          </template>
+
+          <DashboardAnalysisMetricsList
+            class="overflow-y-auto"
+            :metrics="metrics"
+            :type="type"
+          />
+        </ResponsiveModal>
       </CardFooter>
     </template>
     <template v-else>

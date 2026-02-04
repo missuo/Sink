@@ -4,7 +4,6 @@ import { useClipboard } from '@vueuse/core'
 import { CalendarPlus2, Copy, CopyCheck, Eraser, Hourglass, Link as LinkIcon, QrCode, SquareChevronDown, SquarePen } from 'lucide-vue-next'
 import { parseURL } from 'ufo'
 import { toast } from 'vue-sonner'
-import QRCode from './QRCode.vue'
 
 const props = defineProps<{
   link: Link
@@ -62,16 +61,26 @@ function copyLink() {
                 {{ host }}/{{ link.slug }}
               </div>
 
-              <CopyCheck
+              <Button
                 v-if="copied"
-                class="ml-1 h-4 w-4 shrink-0"
+                variant="ghost"
+                size="icon"
+                class="ml-1 h-auto w-auto p-0"
+                aria-label="Link copied"
                 @click.prevent
-              />
-              <Copy
+              >
+                <CopyCheck class="h-4 w-4 shrink-0" />
+              </Button>
+              <Button
                 v-else
-                class="ml-1 h-4 w-4 shrink-0"
+                variant="ghost"
+                size="icon"
+                class="ml-1 h-auto w-auto p-0"
+                aria-label="Copy link"
                 @click.prevent="copyLink"
-              />
+              >
+                <Copy class="h-4 w-4 shrink-0" />
+              </Button>
             </div>
 
             <TooltipProvider>
@@ -92,20 +101,21 @@ function copyLink() {
             :href="link.url"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Open original link"
             @click.stop
           >
             <LinkIcon class="h-5 w-5" />
           </a>
 
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger aria-label="Show QR code">
               <QrCode
                 class="h-5 w-5"
                 @click.prevent
               />
             </PopoverTrigger>
             <PopoverContent>
-              <QRCode
+              <DashboardLinksQRCode
                 :data="shortLink"
                 :image="linkIcon"
               />
@@ -113,7 +123,7 @@ function copyLink() {
           </Popover>
 
           <Popover v-model:open="editPopoverOpen">
-            <PopoverTrigger>
+            <PopoverTrigger aria-label="More actions">
               <SquareChevronDown
                 class="h-5 w-5"
                 @click.prevent
@@ -134,6 +144,7 @@ function copyLink() {
                   "
                 >
                   <SquarePen
+                    aria-hidden="true"
                     class="mr-2 h-5 w-5"
                   />
                   {{ $t('common.edit') }}
@@ -153,6 +164,7 @@ function copyLink() {
                   "
                 >
                   <Eraser
+                    aria-hidden="true"
                     class="mr-2 h-5 w-5"
                   /> {{ $t('common.delete') }}
                 </div>
@@ -166,7 +178,7 @@ function copyLink() {
               <TooltipTrigger as-child>
                 <span
                   class="inline-flex items-center leading-5 whitespace-nowrap"
-                ><CalendarPlus2 class="mr-1 h-4 w-4" /> {{ shortDate(link.createdAt) }}</span>
+                ><CalendarPlus2 aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.createdAt) }}</span>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{{ $t('links.created_at') }}: {{ longDate(link.createdAt) }}</p>
@@ -181,7 +193,7 @@ function copyLink() {
                 <TooltipTrigger as-child>
                   <span
                     class="inline-flex items-center leading-5 whitespace-nowrap"
-                  ><Hourglass class="mr-1 h-4 w-4" /> {{ shortDate(link.expiration) }}</span>
+                  ><Hourglass aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.expiration) }}</span>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{{ $t('links.expires_at') }}: {{ longDate(link.expiration) }}</p>

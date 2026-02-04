@@ -11,6 +11,9 @@ withDefaults(defineProps<{
 const analysisStore = useDashboardAnalysisStore()
 const tz = getLocalTimeZone()
 
+const viewMode = ref<'trend' | 'heatmap'>('trend')
+const heatmapMetric = ref<'visits' | 'visitors'>('visits')
+
 function initDateRange() {
   if (analysisStore.dateRange.startAt === 0) {
     analysisStore.setDateRange([
@@ -31,6 +34,37 @@ onBeforeMount(() => {
     {{ link.slug }} {{ $t('dashboard.stats') }}
   </h3>
   <DashboardAnalysisCounters />
-  <DashboardAnalysisViews />
+  <Tabs v-model="viewMode" default-value="trend">
+    <div class="mb-4 flex items-center justify-between">
+      <TabsList>
+        <TabsTrigger value="trend">
+          {{ $t('dashboard.trend') }}
+        </TabsTrigger>
+        <TabsTrigger value="heatmap">
+          {{ $t('dashboard.weekly_trend') }}
+        </TabsTrigger>
+      </TabsList>
+
+      <Select v-if="viewMode === 'heatmap'" v-model="heatmapMetric">
+        <SelectTrigger class="h-8 w-[120px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="visits">
+            {{ $t('dashboard.visits') }}
+          </SelectItem>
+          <SelectItem value="visitors">
+            {{ $t('dashboard.visitors') }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+    <TabsContent value="trend" class="mt-0">
+      <DashboardAnalysisViews v-if="viewMode === 'trend'" />
+    </TabsContent>
+    <TabsContent value="heatmap" class="mt-0">
+      <DashboardAnalysisHeatmap v-if="viewMode === 'heatmap'" :metric="heatmapMetric" />
+    </TabsContent>
+  </Tabs>
   <DashboardAnalysisMetrics />
 </template>

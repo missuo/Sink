@@ -95,6 +95,30 @@
       "link_expiration": {
         "title": "Link-Ablaufdatum",
         "description": "Lege Ablaufdaten für deine Links fest"
+      },
+      "device_routing": {
+        "title": "Geräte-Routing",
+        "description": "iOS/Android-Nutzer zu App-Store-Links weiterleiten"
+      },
+      "og_preview": {
+        "title": "Social Preview",
+        "description": "Benutzerdefinierte OpenGraph-Vorschauen für soziale Medien"
+      },
+      "realtime_analytics": {
+        "title": "Echtzeit-Analysen",
+        "description": "Live-3D-Globus und Echtzeit-Ereignisprotokolle"
+      },
+      "qr_code": {
+        "title": "QR-Code",
+        "description": "Generiere QR-Codes für deine Kurzlinks"
+      },
+      "import_export": {
+        "title": "Import/Export",
+        "description": "Massenmigration über JSON-Dateien"
+      },
+      "multi_language": {
+        "title": "Mehrsprachig",
+        "description": "Vollständige i18n-Unterstützung für das Dashboard"
       }
     },
     "cta": {
@@ -107,6 +131,16 @@
     },
     "twitter": {
       "follow": "Folge mir auf X (Twitter)"
+    },
+    "stats": {
+      "title": "Sink in Zahlen",
+      "subtitle": "Von Entwicklern weltweit vertraut",
+      "stars": "Stars auf GitHub",
+      "forks": "Forks"
+    },
+    "testimonials": {
+      "title": "Von Nutzern geliebt",
+      "subtitle": "Erfahre, was Entwickler über Sink sagen"
     }
   },
   "dashboard": {
@@ -116,6 +150,8 @@
     "visitors": "Besucher",
     "referers": "Referrer",
     "stats": "'s Statistiken",
+    "trend": "Trend",
+    "weekly_trend": "Wochentrend",
     "custom_date": "Benutzerdefiniertes Datum",
     "date": "Datum",
     "date_range": "Datumsbereich",
@@ -191,7 +227,25 @@
       "slug": "Slug",
       "comment": "Kommentar",
       "expiration": "Ablaufdatum",
-      "pick_date": "Datum auswählen"
+      "pick_date": "Datum auswählen",
+      "device_redirect": "Geräteweiterleitung",
+      "google_play": "Google Play URL",
+      "app_store": "App Store URL",
+      "og_settings": "OpenGraph-Einstellungen",
+      "og_title": "Titel",
+      "og_title_placeholder": "Leer lassen, um den URL-Hostnamen zu verwenden",
+      "og_description": "Beschreibung",
+      "og_description_placeholder": "Link-Beschreibung",
+      "og_image": "Bild",
+      "advanced": "Erweitert",
+      "more_options": "Weitere Optionen",
+      "image_invalid_type": "Bitte lade eine Bilddatei hoch",
+      "image_size_limit": "Bildgröße darf 5 MB nicht überschreiten",
+      "image_upload_success": "Bild erfolgreich hochgeladen",
+      "image_upload_failed": "Bild konnte nicht hochgeladen werden",
+      "image_upload_hint": "Klicken oder ziehen zum Hochladen",
+      "image_ratio_hint": "Empfohlen: 1200×630",
+      "slug_required": "Bitte zuerst einen Slug eingeben"
     },
     "sort": {
       "newest": "Neueste zuerst",

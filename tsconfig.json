@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "types": ["@cloudflare/vitest-pool-workers"]
-  },
   "references": [
     {
       "path": "./.nuxt/tsconfig.app.json"

@@ -1,11 +1,10 @@
-import type { QuerySchema } from '@@/schemas/query'
+import type { Query } from '@@/schemas/query'
 import type { SelectStatement } from 'sql-bricks'
-import type { z } from 'zod'
 import type { BlobsKey } from './access-log'
 
 const { in: $in, and, eq } = SqlBricks
 
-export type Query = z.infer<typeof QuerySchema>
+export type { Query }
 
 export function query2filter(query: Query) {
   const filter = []

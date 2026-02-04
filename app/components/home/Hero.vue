@@ -44,11 +44,11 @@ const { title, description, github, twitter } = useAppConfig()
                 text-xs
               "
             >
-              <XIcon class="size-3" />
+              <XIcon aria-hidden="true" class="size-3" />
             </span>
             <span class="text-sm">{{ $t('home.twitter.follow') }}</span>
             <span class="block h-4 w-px bg-border" />
-            <ArrowRight class="size-4" />
+            <ArrowRight aria-hidden="true" class="size-4" />
           </a>
 
           <h1
@@ -92,7 +92,7 @@ const { title, description, github, twitter } = useAppConfig()
                 :title="$t('layouts.footer.social.github')"
                 class="flex items-center gap-1.5"
               >
-                <GitHubIcon class="size-5" />
+                <GitHubIcon aria-hidden="true" class="size-5" />
                 <span class="text-nowrap">{{ $t('home.hero.github_repo') }}</span>
               </a>
             </Button>

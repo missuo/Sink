@@ -9,6 +9,17 @@ const realtimeStore = useDashboardRealtimeStore()
 const timeRange = ref(realtimeStore.timeName || 'last-1h')
 const tz = getLocalTimeZone()
 
+const TIME_PRESETS: Record<string, { minutes?: number, hours?: number } | 'today'> = {
+  'today': 'today',
+  'last-5m': { minutes: 5 },
+  'last-10m': { minutes: 10 },
+  'last-30m': { minutes: 30 },
+  'last-1h': { hours: 1 },
+  'last-6h': { hours: 6 },
+  'last-12h': { hours: 12 },
+  'last-24h': { hours: 24 },
+}
+
 watch(() => realtimeStore.timeName, (newName) => {
   if (newName && newName !== timeRange.value) {
     timeRange.value = newName
@@ -16,35 +27,18 @@ watch(() => realtimeStore.timeName, (newName) => {
 })
 
 watch(timeRange, (newValue) => {
-  switch (newValue) {
-    case 'today':
-      emit('update:timeRange', [date2unix(now(tz), 'start'), date2unix(now(tz))], newValue)
-      break
-    case 'last-5m':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ minutes: 5 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-10m':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ minutes: 10 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-30m':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ minutes: 30 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-1h':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ hours: 1 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-6h':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ hours: 6 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-12h':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ hours: 12 })), date2unix(now(tz))], newValue)
-      break
-    case 'last-24h':
-      emit('update:timeRange', [date2unix(now(tz).subtract({ hours: 24 })), date2unix(now(tz))], newValue)
-      break
-    default:
-      break
+  const preset = TIME_PRESETS[newValue]
+  if (!preset)
+    return
+
+  const currentTime = now(tz)
+  if (preset === 'today') {
+    emit('update:timeRange', [date2unix(currentTime, 'start'), date2unix(currentTime)], newValue)
   }
-}, { deep: true })
+  else {
+    emit('update:timeRange', [date2unix(currentTime.subtract(preset)), date2unix(currentTime)], newValue)
+  }
+})
 </script>
 
 <template>

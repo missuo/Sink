@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { LogOut } from 'lucide-vue-next'
 
+const { removeToken } = useAuthToken()
+
 function logOut() {
-  localStorage.removeItem('SinkSiteToken')
+  removeToken()
   navigateTo('/dashboard/login')
 }
 </script>

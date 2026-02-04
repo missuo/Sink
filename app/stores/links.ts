@@ -1,11 +1,12 @@
 import type { Link, LinkUpdateType } from '@/types'
+import { defineStore } from '#imports'
+import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
+import { ref } from 'vue'
 
 export interface LinkUpdateEvent {
   link: Link
   type: LinkUpdateType
 }
-
-type LinkUpdateCallback = (event: LinkUpdateEvent) => void
 
 export const useDashboardLinksStore = defineStore('dashboard-links', () => {
   const sortBy = ref<'newest' | 'oldest' | 'az' | 'za'>('az')
@@ -13,7 +14,7 @@ export const useDashboardLinksStore = defineStore('dashboard-links', () => {
   const showLinkEditor = ref(false)
   const editingLink = ref<Record<string, unknown> | null>(null)
 
-  const subscribers = new Set<LinkUpdateCallback>()
+  const linkUpdateHook = createEventHook<LinkUpdateEvent>()
 
   function openLinkEditor(link?: Record<string, unknown>) {
     editingLink.value = link || null
@@ -26,13 +27,13 @@ export const useDashboardLinksStore = defineStore('dashboard-links', () => {
   }
 
   function notifyLinkUpdate(link: Link, type: LinkUpdateType) {
-    const event: LinkUpdateEvent = { link, type }
-    subscribers.forEach(callback => callback(event))
+    linkUpdateHook.trigger({ link, type })
   }
 
-  function onLinkUpdate(callback: LinkUpdateCallback): () => void {
-    subscribers.add(callback)
-    return () => subscribers.delete(callback)
+  function onLinkUpdate(callback: (event: LinkUpdateEvent) => void) {
+    const { off } = linkUpdateHook.on(callback)
+    tryOnScopeDispose(off)
+    return off
   }
 
   return {

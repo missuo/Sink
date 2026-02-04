@@ -13,11 +13,12 @@ const options = {
   width: 256,
   height: 256,
   data: props.data,
+  type: 'svg' as const,
   margin: 10,
   qrOptions: { typeNumber: 0 as const, mode: 'Byte' as const, errorCorrectionLevel: 'Q' as const },
   imageOptions: { hideBackgroundDots: true, imageSize: 0.4, margin: 2 },
-  dotsOptions: { type: 'dots' as const, color: '#000000', gradient: null },
-  backgroundOptions: { color: '#ffffff', gradient: null },
+  dotsOptions: { type: 'dots' as const, color: '#000000' },
+  backgroundOptions: { color: '#ffffff' },
   image: props.image,
   dotsOptionsHelper: {
     colorType: { single: true, gradient: false },
@@ -64,13 +65,13 @@ const options = {
 }
 
 const qrCode = new QRCodeStyling(options)
-const qrCodeEl = ref<HTMLElement | null>(null)
+const qrCodeEl = useTemplateRef<HTMLElement>('qrCodeEl')
 
 function updateColor(newColor: string) {
   qrCode.update({
-    dotsOptions: { type: 'dots', color: newColor, gradient: null },
-    cornersSquareOptions: { type: 'extra-rounded', color: newColor },
-    cornersDotOptions: { type: 'dot', color: newColor },
+    dotsOptions: { type: 'dots' as const, color: newColor },
+    cornersSquareOptions: { type: 'extra-rounded' as const, color: newColor },
+    cornersDotOptions: { type: 'dot' as const, color: newColor },
   })
 }
 

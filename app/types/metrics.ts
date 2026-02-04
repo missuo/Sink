@@ -43,3 +43,10 @@ export interface AreaData {
   name: string
   count: number
 }
+
+export interface HeatmapDataPoint {
+  weekday: number
+  hour: number
+  visits: number
+  visitors: number
+}

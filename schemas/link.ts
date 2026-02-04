@@ -18,7 +18,20 @@ export const LinkSchema = z.object({
     message: 'expiration must be greater than current time',
     path: ['expiration'],
   }).optional(),
-  title: z.string().trim().max(2048).optional(),
+  title: z.string().trim().max(256).optional(),
   description: z.string().trim().max(2048).optional(),
-  image: z.string().trim().url().max(2048).optional(),
+  image: z.string().trim().max(128).optional(),
+  apple: z.string().trim().url().max(2048).optional(),
+  google: z.string().trim().url().max(2048).optional(),
 })
+
+export type Link = z.infer<typeof LinkSchema>
+
+export interface ExportData {
+  version: string
+  exportedAt: string
+  count: number
+  links: Link[]
+  cursor?: string
+  list_complete: boolean
+}

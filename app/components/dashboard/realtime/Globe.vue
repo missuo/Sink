@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { GlobeInstance } from 'globe.gl'
 import type { ColoData, CurrentLocation, GeoJSONData, LocationData } from '@/types'
-import { useDebounceFn, useElementSize } from '@vueuse/core'
+import type { TrafficEventParams } from '@/utils/events'
+import { useDebounceFn, useElementSize, watchDeep } from '@vueuse/core'
 import { scaleSequentialSqrt } from 'd3-scale'
 import { interpolateYlOrRd } from 'd3-scale-chromatic'
 import Globe from 'globe.gl'
@@ -8,9 +10,9 @@ import { MeshPhongMaterial } from 'three'
 
 const realtimeStore = useDashboardRealtimeStore()
 
-const countries = ref<GeoJSONData>({ features: [] })
-const locations = ref<LocationData[]>([])
-const colos = ref<Record<string, ColoData>>({})
+const countries = shallowRef<GeoJSONData>({ features: [] })
+const locations = shallowRef<LocationData[]>([])
+const colos = shallowRef<Record<string, ColoData>>({})
 const currentLocation = ref<CurrentLocation>({})
 
 const el = useTemplateRef('globeEl')
@@ -26,17 +28,20 @@ const highest = computed(() => {
   return locations.value.reduce((acc, curr) => Math.max(acc, curr.count), 0) || 1
 })
 
-let globe = null
-const pendingTimers = []
+let globe: GlobeInstance | null = null
+const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>()
 
-function trackTimer(id) {
-  pendingTimers.push(id)
-  return id
+function safeTimeout(fn: () => void, delay: number) {
+  const id = setTimeout(() => {
+    pendingTimeouts.delete(id)
+    fn()
+  }, delay)
+  pendingTimeouts.add(id)
 }
 
-function clearAllTimers() {
-  pendingTimers.forEach(id => clearTimeout(id))
-  pendingTimers.length = 0
+function clearAllTimeouts() {
+  pendingTimeouts.forEach(id => clearTimeout(id))
+  pendingTimeouts.clear()
 }
 
 async function getGlobeJSON() {
@@ -76,19 +81,34 @@ async function getLiveLocations() {
   })) || []
 }
 
-function trafficEvent({ props }, { delay = 0 }) {
+function trafficEvent({ props }: TrafficEventParams, { delay = 0 }: { delay?: number } = {}) {
+  if (!globe)
+    return
+
+  const { item } = props
+  if (item.latitude == null || item.longitude == null || !item.COLO) {
+    console.warn('Missing location data for traffic event', item)
+    return
+  }
+
   const arc = {
-    startLat: props.item.latitude,
-    startLng: props.item.longitude,
-    endLat: colos.value[props.item.COLO]?.lat,
-    endLng: colos.value[props.item.COLO]?.lon,
+    startLat: item.latitude,
+    startLng: item.longitude,
+    endLat: colos.value[item.COLO]?.lat,
+    endLng: colos.value[item.COLO]?.lon,
     color: 'darkOrange',
     arcAltitude: 0.2,
   }
-  console.info(`from ${props.item.city}(${arc.startLat}, ${arc.startLng}) to ${props.item.COLO}(${arc.endLat}, ${arc.endLng})`)
+
+  if (arc.endLat === undefined || arc.endLng === undefined) {
+    console.warn(`Missing COLO coordinates for ${item.COLO}`)
+    return
+  }
+
+  console.info(`from ${item.city}(${arc.startLat}, ${arc.startLng}) to ${item.COLO}(${arc.endLat}, ${arc.endLng})`)
   const isNear = Math.abs(arc.endLat - arc.startLat) < 5 && Math.abs(arc.endLng - arc.startLng) < 5
   if (isNear) {
-    console.info(`from ${props.item.city} to ${props.item.COLO} is near, skip`)
+    console.info(`from ${item.city} to ${item.COLO} is near, skip`)
     return
   }
   const random = Math.random()
@@ -101,17 +121,29 @@ function trafficEvent({ props }, { delay = 0 }) {
 
   const srcRing = { lat: arc.startLat, lng: arc.startLng }
   globe.ringsData([...(globe.ringsData() as object[]), srcRing])
-  trackTimer(setTimeout(() => globe.ringsData((globe.ringsData() as object[]).filter(r => r !== srcRing)), delay * 2))
+  safeTimeout(() => {
+    if (globe) {
+      globe.ringsData((globe.ringsData() as object[]).filter(r => r !== srcRing))
+    }
+  }, delay * 2)
 
-  trackTimer(setTimeout(() => {
+  safeTimeout(() => {
+    if (!globe)
+      return
     const targetRing = { lat: arc.endLat, lng: arc.endLng }
     globe.ringsData([...(globe.ringsData() as object[]), targetRing])
-    trackTimer(setTimeout(() => globe.ringsData((globe.ringsData() as object[]).filter(r => r !== targetRing)), delay * 2))
-  }, delay * 2))
+    safeTimeout(() => {
+      if (globe) {
+        globe.ringsData((globe.ringsData() as object[]).filter(r => r !== targetRing))
+      }
+    }, delay * 2)
+  }, delay * 2)
 
-  trackTimer(setTimeout(() => {
-    globe.arcsData([])
-  }, delay * 2))
+  safeTimeout(() => {
+    if (globe) {
+      globe.arcsData([])
+    }
+  }, delay * 2)
 }
 
 function createWeightColor() {
@@ -144,7 +176,7 @@ function initGlobe() {
       color: 'rgb(228, 228, 231)',
       transparent: false,
       opacity: 1,
-    }))
+    }) as any)
     .backgroundColor('rgba(0,0,0,0)')
     .hexPolygonsData(countries.value.features as object[])
     .hexPolygonResolution(3)
@@ -155,12 +187,14 @@ function initGlobe() {
     .hexBinMerge(true)
     .hexBinPointWeight('count')
     .hexPolygonColor(() => `rgba(54, 211, 153, ${Math.random() / 1.5 + 0.5})`)
-    .hexTopColor(d => weightColor(d.sumWeight))
-    .hexSideColor(d => weightColor(d.sumWeight))
-    .ringColor(() => t => `rgba(255,100,50,${1 - t})`)
+    .hexTopColor((d: { sumWeight: number }) => weightColor(d.sumWeight))
+    .hexSideColor((d: { sumWeight: number }) => weightColor(d.sumWeight))
+    .ringColor(() => (t: number) => `rgba(255,100,50,${1 - t})`)
     .ringMaxRadius(3)
     .ringPropagationSpeed(3)
     .onGlobeReady(() => {
+      if (!globe)
+        return
       globe.pointOfView({ lat: currentLocation.value.latitude, lng: currentLocation.value.longitude, altitude: width.value > 768 ? 2 : 3 })
       globe.controls().autoRotate = true
       globe.controls().autoRotateSpeed = 0.3
@@ -177,9 +211,7 @@ function stopRotation() {
   }
 }
 
-watch([() => realtimeStore.timeRange, () => realtimeStore.filters], getLiveLocations, {
-  deep: true,
-})
+watchDeep([() => realtimeStore.timeRange, () => realtimeStore.filters], getLiveLocations)
 
 watch([width, height], () => {
   if (globe) {
@@ -192,8 +224,8 @@ watch(locations, () => {
   if (globe) {
     const weightColor = createWeightColor()
     globe.hexBinPointsData(locations.value)
-    globe.hexTopColor(d => weightColor(d.sumWeight))
-    globe.hexSideColor(d => weightColor(d.sumWeight))
+    globe.hexTopColor((d: { sumWeight: number }) => weightColor(d.sumWeight))
+    globe.hexSideColor((d: { sumWeight: number }) => weightColor(d.sumWeight))
   }
 })
 
@@ -208,7 +240,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  clearAllTimers()
+  clearAllTimeouts()
   globalTrafficEvent.off(trafficEvent)
   if (globe) {
     globe.controls().removeEventListener('end', debouncedControlsEnd)

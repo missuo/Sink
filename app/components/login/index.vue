@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 const { t } = useI18n()
 const { previewMode } = useRuntimeConfig().public
+const { setToken, removeToken } = useAuthToken()
 
 const token = ref('')
 const error = ref('')
@@ -23,12 +24,12 @@ async function handleSubmit() {
   }
 
   try {
-    localStorage.setItem('SinkSiteToken', token.value)
+    setToken(token.value)
     await useAPI('/api/verify')
     navigateTo('/dashboard')
   }
   catch (e) {
-    localStorage.removeItem('SinkSiteToken')
+    removeToken()
     console.error(e)
     toast.error(t('login.failed'), {
       description: e instanceof Error ? e.message : String(e),

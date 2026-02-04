@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const tabs: Record<string, string[]> = {
+const tabs = {
   location: ['country', 'region', 'city'],
   referer: ['referer', 'slug'],
   time: ['language', 'timezone'],
   device: ['device', 'deviceType'],
   browser: ['os', 'browser', 'browserType'],
-}
+} as const
 
 const translatedTabs = computed(() => ({
   location: tabs.location.map(tab => t(`dashboard.metrics.${tab}`)),

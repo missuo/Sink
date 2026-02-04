@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AreaChart, Hourglass, Link, Paintbrush, ServerOff, Sparkles } from 'lucide-vue-next'
+import { AreaChart, FileJson, Globe, Hourglass, Languages, Link, Paintbrush, QrCode, ServerOff, Share2, Smartphone, Sparkles } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const features = computed(() => [
@@ -32,6 +32,36 @@ const features = computed(() => [
     title: t('home.features.link_expiration.title'),
     description: t('home.features.link_expiration.description'),
     icon: Hourglass,
+  },
+  {
+    title: t('home.features.device_routing.title'),
+    description: t('home.features.device_routing.description'),
+    icon: Smartphone,
+  },
+  {
+    title: t('home.features.og_preview.title'),
+    description: t('home.features.og_preview.description'),
+    icon: Share2,
+  },
+  {
+    title: t('home.features.realtime_analytics.title'),
+    description: t('home.features.realtime_analytics.description'),
+    icon: Globe,
+  },
+  {
+    title: t('home.features.qr_code.title'),
+    description: t('home.features.qr_code.description'),
+    icon: QrCode,
+  },
+  {
+    title: t('home.features.import_export.title'),
+    description: t('home.features.import_export.description'),
+    icon: FileJson,
+  },
+  {
+    title: t('home.features.multi_language.title'),
+    description: t('home.features.multi_language.description'),
+    icon: Languages,
   },
 ])
 </script>

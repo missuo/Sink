@@ -24,7 +24,7 @@ onMounted(() => {
   getLink()
 })
 
-const unsubscribe = linksStore.onLinkUpdate(({ link: updatedLink, type }) => {
+linksStore.onLinkUpdate(({ link: updatedLink, type }) => {
   if (updatedLink.id !== link.value?.id)
     return
 
@@ -34,10 +34,6 @@ const unsubscribe = linksStore.onLinkUpdate(({ link: updatedLink, type }) => {
   else if (type === 'edit') {
     link.value = updatedLink
   }
-})
-
-onUnmounted(() => {
-  unsubscribe()
 })
 </script>
 
