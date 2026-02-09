@@ -1,6 +1,6 @@
+import type { BlobsMap, DoublesMap } from '#server/utils/access-log'
 import type { H3Event } from 'h3'
-import type { BlobsMap, DoublesMap } from '../../utils/access-log'
-import { QuerySchema } from '@@/schemas/query'
+import { QuerySchema } from '#shared/schemas/query'
 import { z } from 'zod'
 
 const { select } = SqlBricks

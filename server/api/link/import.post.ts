@@ -1,6 +1,49 @@
-import type { ImportResult } from '@@/schemas/import'
-import { ImportDataSchema } from '@@/schemas/import'
-import { nanoid } from '@@/schemas/link'
+import type { ImportResult } from '#shared/schemas/import'
+import { ImportDataSchema } from '#shared/schemas/import'
+import { nanoid } from '#shared/schemas/link'
+
+defineRouteMeta({
+  openAPI: {
+    description: 'Import links from exported data',
+    security: [{ bearerAuth: [] }],
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['version', 'links'],
+            properties: {
+              version: { type: 'string', description: 'Export format version' },
+              exportedAt: { type: 'string', description: 'Export timestamp (ISO 8601)' },
+              count: { type: 'integer', description: 'Number of links in export' },
+              links: {
+                type: 'array',
+                description: 'Array of links to import',
+                items: {
+                  type: 'object',
+                  required: ['url', 'slug'],
+                  properties: {
+                    id: { type: 'string', description: 'Link ID (auto-generated if not provided)' },
+                    url: { type: 'string', description: 'The target URL' },
+                    slug: { type: 'string', description: 'The slug for the short link' },
+                    comment: { type: 'string', description: 'Optional comment' },
+                    createdAt: { type: 'integer', description: 'Creation timestamp (unix seconds)' },
+                    updatedAt: { type: 'integer', description: 'Last update timestamp (unix seconds)' },
+                    expiration: { type: 'integer', description: 'Expiration timestamp (unix seconds)' },
+                    title: { type: 'string', description: 'Custom title for link preview' },
+                    description: { type: 'string', description: 'Custom description for link preview' },
+                    image: { type: 'string', description: 'Custom image for link preview' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+})
 
 export default eventHandler(async (event) => {
   const kvBatchLimit = useRuntimeConfig(event).public.kvBatchLimit as string

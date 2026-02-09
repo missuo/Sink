@@ -1,6 +1,6 @@
 /// <reference path="../../worker-configuration.d.ts" />
 
-import type { Link } from '@@/schemas/link'
+import type { Link } from '#shared/schemas/link'
 import pLimit from 'p-limit'
 
 interface BackupData {

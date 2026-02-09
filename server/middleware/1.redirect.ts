@@ -1,5 +1,4 @@
-import type { LinkSchema } from '@@/schemas/link'
-import type { z } from 'zod'
+import type { Link } from '@/types'
 import { parsePath, withQuery } from 'ufo'
 
 const SOCIAL_BOTS = [
@@ -25,7 +24,7 @@ function isSocialBot(userAgent: string): boolean {
   return SOCIAL_BOTS.some(bot => ua.includes(bot))
 }
 
-function getDeviceRedirectUrl(userAgent: string, link: z.infer<typeof LinkSchema>): string | null {
+function getDeviceRedirectUrl(userAgent: string, link: Link): string | null {
   if (!link.apple && !link.google)
     return null
 
@@ -42,7 +41,7 @@ function getDeviceRedirectUrl(userAgent: string, link: z.infer<typeof LinkSchema
   return null
 }
 
-function hasOgConfig(link: z.infer<typeof LinkSchema>): boolean {
+function hasOgConfig(link: Link): boolean {
   return !!(link.title || link.image)
 }
 
@@ -56,19 +55,14 @@ export default eventHandler(async (event) => {
     return sendRedirect(event, homeURL)
 
   if (slug && !reserveSlug.includes(slug) && slugRegex.test(slug) && cloudflare) {
-    const { KV } = cloudflare.env
-
-    let link: z.infer<typeof LinkSchema> | null = null
-
-    const getLink = async (key: string) =>
-      await KV.get(`link:${key}`, { type: 'json', cacheTtl: linkCacheTtl })
+    let link: Link | null = null
 
     const lowerCaseSlug = slug.toLowerCase()
-    link = await getLink(caseSensitive ? slug : lowerCaseSlug)
+    link = await getLink(event, caseSensitive ? slug : lowerCaseSlug, linkCacheTtl)
 
     if (!caseSensitive && !link && lowerCaseSlug !== slug) {
       console.log('original slug fallback:', `slug:${slug} lowerCaseSlug:${lowerCaseSlug}`)
-      link = await getLink(slug)
+      link = await getLink(event, slug, linkCacheTtl)
     }
 
     if (link) {
@@ -97,6 +91,9 @@ export default eventHandler(async (event) => {
       }
 
       return sendRedirect(event, buildTarget(link.url), +redirectStatusCode)
+    }
+    else {
+      throw createError({ status: 404, statusText: 'Link not found' })
     }
   }
 })

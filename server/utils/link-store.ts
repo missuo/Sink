@@ -1,8 +1,14 @@
-import type { LinkSchema } from '@@/schemas/link'
+import type { LinkSchema } from '#shared/schemas/link'
 import type { H3Event } from 'h3'
 import type { z } from 'zod'
+import { parseURL, stringifyParsedURL } from 'ufo'
 
 type Link = z.infer<typeof LinkSchema>
+
+export function withoutQuery(url: string): string {
+  const parsed = parseURL(url)
+  return stringifyParsedURL({ ...parsed, search: '' })
+}
 
 export function normalizeSlug(event: H3Event, slug: string): string {
   const { caseSensitive } = useRuntimeConfig(event)
@@ -14,32 +20,36 @@ export function buildShortLink(event: H3Event, slug: string): string {
 }
 
 export async function putLink(event: H3Event, link: Link): Promise<void> {
-  const { KV } = event.context.cloudflare.env
+  const { cloudflare } = event.context
+  const { KV } = cloudflare.env
   const expiration = getExpiration(event, link.expiration)
 
   await KV.put(`link:${link.slug}`, JSON.stringify(link), {
     expiration,
     metadata: {
       expiration,
-      url: link.url,
+      url: withoutQuery(link.url),
       comment: link.comment,
     },
   })
 }
 
-export async function getLink(event: H3Event, slug: string): Promise<Link | null> {
-  const { KV } = event.context.cloudflare.env
-  return await KV.get(`link:${slug}`, { type: 'json' })
+export async function getLink(event: H3Event, slug: string, cacheTtl?: number): Promise<Link | null> {
+  const { cloudflare } = event.context
+  const { KV } = cloudflare.env
+  return await KV.get(`link:${slug}`, { type: 'json', cacheTtl }) as Link | null
 }
 
 export async function getLinkWithMetadata(event: H3Event, slug: string): Promise<{ link: Link | null, metadata: Record<string, unknown> | null }> {
-  const { KV } = event.context.cloudflare.env
+  const { cloudflare } = event.context
+  const { KV } = cloudflare.env
   const { metadata, value: link } = await KV.getWithMetadata(`link:${slug}`, { type: 'json' })
   return { link: link as Link | null, metadata: metadata as Record<string, unknown> | null }
 }
 
 export async function deleteLink(event: H3Event, slug: string): Promise<void> {
-  const { KV } = event.context.cloudflare.env
+  const { cloudflare } = event.context
+  const { KV } = cloudflare.env
   await KV.delete(`link:${slug}`)
 }
 
@@ -60,7 +70,8 @@ interface ListLinksResult {
 }
 
 export async function listLinks(event: H3Event, options: ListLinksOptions): Promise<ListLinksResult> {
-  const { KV } = event.context.cloudflare.env
+  const { cloudflare } = event.context
+  const { KV } = cloudflare.env
   const list = await KV.list({
     prefix: 'link:',
     limit: options.limit,
@@ -69,10 +80,10 @@ export async function listLinks(event: H3Event, options: ListLinksOptions): Prom
 
   const links = await Promise.all(
     (list.keys || []).map(async (key: { name: string }) => {
-      const { metadata, value: link } = await KV.getWithMetadata(key.name, { type: 'json' })
+      const { metadata, value: link } = await KV.getWithMetadata(key.name, { type: 'json' }) as { metadata: Record<string, unknown> | null, value: Link | null }
       if (link) {
         return {
-          ...metadata,
+          ...(metadata ?? {}),
           ...link,
         }
       }
@@ -83,6 +94,6 @@ export async function listLinks(event: H3Event, options: ListLinksOptions): Prom
   return {
     links,
     list_complete: list.list_complete,
-    cursor: list.cursor,
+    cursor: 'cursor' in list ? list.cursor : undefined,
   }
 }

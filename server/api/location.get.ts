@@ -10,7 +10,8 @@ defineRouteMeta({
 })
 
 export default eventHandler((event) => {
-  const { request: { cf } } = event.context.cloudflare
+  const { cloudflare } = event.context
+  const { request: { cf } } = cloudflare
   return {
     latitude: cf?.latitude,
     longitude: cf?.longitude,

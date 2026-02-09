@@ -4,6 +4,7 @@ import { currentLocales } from './i18n/i18n'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  extends: ['./layers/dashboard'],
   modules: [
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
@@ -42,19 +43,19 @@ export default defineNuxtConfig({
     '/': {
       prerender: true,
     },
-    '/dashboard/**': {
-      prerender: true,
-      ssr: false,
-    },
-    '/dashboard': {
-      redirect: '/dashboard/links',
-    },
     '/api/**': {
       cors: process.env.NUXT_API_CORS === 'true',
     },
   },
   experimental: {
     enforceModuleCompatibility: true,
+  },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        types: ['vite/client'],
+      },
+    },
   },
   compatibilityDate: 'latest',
   nitro: {
@@ -84,10 +85,8 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-  },
-  typescript: {
-    tsConfig: {
-      include: ['../schemas/**/*'],
+    worker: {
+      format: 'es',
     },
   },
   eslint: {

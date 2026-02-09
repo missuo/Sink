@@ -36,6 +36,8 @@ URL parameters are not carried during link redirection by default and it is not 
 
 ## `NUXT_HOME_URL`
 
+> If you are using Worker deployment, this variable needs to be configured in **Settings** -> **Build** -> **Variables and Secrets** and **Settings** -> **Variables and Secrets**.
+
 The default Sink homepage is the introduction page, you can replace it with your own website.
 
 ## `NUXT_DATASET`

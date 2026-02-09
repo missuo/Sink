@@ -113,6 +113,14 @@ We currently support deployment to [Cloudflare Workers](./docs/deployment/worker
 
 [API Docs](./docs/api.md)
 
+## 🤖 AI Skills
+
+Install Sink AI Skills for enhanced coding assistance:
+
+```bash
+npx skills add miantiao-me/sink
+```
+
 ## 🧰 MCP
 
 We currently do not support native MCP Server, but we have OpenAPI documentation, and you can use the following method to support MCP.
@@ -132,7 +140,7 @@ We currently do not support native MCP Server, but we have OpenAPI documentation
       "env": {
         "OPENAPI_SPEC_URL": "https://sink.cool/_docs/openapi.json",
         "API_KEY": "SinkCool",
-        "TOOL_WHITELIST": "/api/link/create"
+        "TOOL_WHITELIST": "/api/link"
       }
     }
   }

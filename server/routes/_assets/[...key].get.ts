@@ -1,9 +1,10 @@
-import { LinkSchema } from '@@/schemas/link'
+import { LinkSchema } from '#shared/schemas/link'
 
 const slugValidator = LinkSchema.shape.slug
 
 export default eventHandler(async (event) => {
-  const { R2 } = event.context.cloudflare.env
+  const { cloudflare } = event.context
+  const { R2 } = cloudflare.env
   const key = getRouterParam(event, 'key')
 
   if (!key) {

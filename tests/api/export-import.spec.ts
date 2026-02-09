@@ -1,5 +1,5 @@
-import type { ImportResult } from '../../schemas/import'
-import type { ExportData } from '../../schemas/link'
+import type { ImportResult } from '../../shared/schemas/import'
+import type { ExportData } from '../../shared/schemas/link'
 import { generateMock } from '@anatine/zod-mock'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'

@@ -110,7 +110,8 @@ export function useAccessLog(event: H3Event) {
     device: [ExtraDevices.device || []].flat(),
   })).getResult()
 
-  const { request: { cf }, env } = event.context.cloudflare
+  const { cloudflare } = event.context
+  const { request: { cf }, env } = cloudflare
   const link = event.context.link || {}
 
   const isBot = cf?.botManagement?.verifiedBot

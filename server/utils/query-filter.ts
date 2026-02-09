@@ -1,4 +1,4 @@
-import type { Query } from '@@/schemas/query'
+import type { Query } from '#shared/schemas/query'
 import type { SelectStatement } from 'sql-bricks'
 import type { BlobsKey } from './access-log'
 
