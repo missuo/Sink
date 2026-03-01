@@ -22,7 +22,9 @@ export const earthFragmentShader = /* glsl */ `
   varying vec2 vUv;
 
   void main() {
-    gl_FragColor = vec4(texture2D(u_countryTexture, vUv).rgb, 1.0);
+    vec2 uv = vUv;
+    uv.x = fract(uv.x);
+    gl_FragColor = vec4(texture2D(u_countryTexture, uv).rgb, 1.0);
   }
 `
 

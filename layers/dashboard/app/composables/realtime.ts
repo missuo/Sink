@@ -2,73 +2,10 @@ import { defineStore } from '#imports'
 import { getLocalTimeZone, now } from '@internationalized/date'
 import { useUrlSearchParams } from '@vueuse/core'
 import { safeDestr } from 'destr'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { date2unix } from '@/utils/time'
 
-export const useDashboardRealtimeStore = defineStore('dashboard-realtime', () => {
-  const searchParams = useUrlSearchParams('history')
-
-  const timeRange = ref({
-    startAt: 0,
-    endAt: 0,
-  })
-  const filters = ref<Record<string, string>>({})
-  const timeName = ref('last-1h')
-
-  function updateTimeRange(range: [number, number], name?: string) {
-    timeRange.value.startAt = range[0]
-    timeRange.value.endAt = range[1]
-    if (name) {
-      timeName.value = name
-      searchParams.time = name
-    }
-  }
-
-  function updateFilter(type: string, value: string) {
-    filters.value[type] = value
-    searchParams.filters = JSON.stringify(filters.value)
-  }
-
-  function clearFilters() {
-    filters.value = {}
-    searchParams.filters = ''
-  }
-
-  function restoreFromUrl() {
-    if (searchParams.time && typeof searchParams.time === 'string') {
-      timeName.value = searchParams.time
-    }
-
-    if (searchParams.filters && typeof searchParams.filters === 'string') {
-      const restored = safeDestr<Record<string, string>>(searchParams.filters)
-      if (restored) {
-        Object.assign(filters.value, restored)
-      }
-    }
-  }
-
-  function initDefaultTimeRange() {
-    if (timeRange.value.startAt === 0) {
-      const tz = getLocalTimeZone()
-      const range = computeTimeRangeFromName(timeName.value, tz)
-      timeRange.value.startAt = range[0]
-      timeRange.value.endAt = range[1]
-    }
-  }
-
-  return {
-    timeRange,
-    timeName,
-    filters,
-    updateTimeRange,
-    updateFilter,
-    clearFilters,
-    restoreFromUrl,
-    initDefaultTimeRange,
-  }
-})
-
-const TIME_RANGE_PRESETS: Record<string, { minutes?: number, hours?: number } | 'today'> = {
+const TIME_PRESETS: Record<string, { minutes?: number, hours?: number } | 'today'> = {
   'today': 'today',
   'last-5m': { minutes: 5 },
   'last-10m': { minutes: 10 },
@@ -79,9 +16,10 @@ const TIME_RANGE_PRESETS: Record<string, { minutes?: number, hours?: number } | 
   'last-24h': { hours: 24 },
 }
 
-function computeTimeRangeFromName(name: string, tz: string): [number, number] {
+function computeTimeRange(name: string): [number, number] {
+  const tz = getLocalTimeZone()
   const currentTime = now(tz)
-  const preset = TIME_RANGE_PRESETS[name] ?? { hours: 1 }
+  const preset = TIME_PRESETS[name] ?? { hours: 1 }
 
   if (preset === 'today') {
     return [date2unix(currentTime, 'start'), date2unix(currentTime)]
@@ -89,3 +27,76 @@ function computeTimeRangeFromName(name: string, tz: string): [number, number] {
 
   return [date2unix(currentTime.subtract(preset)), date2unix(currentTime)]
 }
+
+export const useDashboardRealtimeStore = defineStore('dashboard-realtime', () => {
+  const searchParams = useUrlSearchParams('history')
+  let initialized = false
+
+  const timeRange = ref({ startAt: 0, endAt: 0 })
+  const timeName = ref('last-1h')
+  const filters = ref<Record<string, string>>({})
+
+  function selectPreset(name: string) {
+    timeName.value = name
+    const [start, end] = computeTimeRange(name)
+    timeRange.value.startAt = start
+    timeRange.value.endAt = end
+  }
+
+  function updateFilter(type: string, value: string) {
+    filters.value[type] = value
+  }
+
+  function clearFilters() {
+    filters.value = {}
+  }
+
+  // URL > Store > Default, then enable URL sync
+  function init() {
+    if (initialized)
+      return
+
+    // Restore from URL
+    if (searchParams.time && typeof searchParams.time === 'string') {
+      timeName.value = searchParams.time
+    }
+    if (searchParams.filters && typeof searchParams.filters === 'string') {
+      const restored = safeDestr<Record<string, string>>(searchParams.filters)
+      if (restored) {
+        Object.assign(filters.value, restored)
+      }
+    }
+
+    // Apply default time range from preset if not restored
+    if (timeRange.value.startAt === 0) {
+      const [start, end] = computeTimeRange(timeName.value)
+      timeRange.value.startAt = start
+      timeRange.value.endAt = end
+    }
+
+    initialized = true
+  }
+
+  // Store → URL sync (only after init)
+  watch(timeName, (val) => {
+    if (!initialized)
+      return
+    searchParams.time = val
+  })
+
+  watch(filters, (val) => {
+    if (!initialized)
+      return
+    searchParams.filters = Object.keys(val).length ? JSON.stringify(val) : ''
+  }, { deep: true })
+
+  return {
+    timeRange,
+    timeName,
+    filters,
+    selectPreset,
+    updateFilter,
+    clearFilters,
+    init,
+  }
+})

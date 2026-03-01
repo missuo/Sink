@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Link } from '@/types'
+import type { CounterData, Link } from '@/types'
 import { useClipboard } from '@vueuse/core'
-import { CalendarPlus2, Copy, CopyCheck, Eraser, Hourglass, Link as LinkIcon, QrCode, SquareChevronDown, SquarePen } from 'lucide-vue-next'
+import { CalendarPlus2, Copy, CopyCheck, Eraser, Flame, Hourglass, Link as LinkIcon, MousePointerClick, QrCode, ShieldAlert, SquareChevronDown, SquarePen, Users } from 'lucide-vue-next'
 import { parseURL } from 'ufo'
 import { toast } from 'vue-sonner'
 
@@ -11,6 +11,9 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const editPopoverOpen = ref(false)
+
+const countersMap = inject<Ref<Record<string, CounterData>> | undefined>('linksCountersMap', undefined)
+const counters = computed(() => countersMap?.value?.[props.link.id])
 
 const requestUrl = useRequestURL()
 const host = requestUrl.host
@@ -33,10 +36,10 @@ function copyLink() {
 </script>
 
 <template>
-  <Card>
-    <CardContent>
+  <Card class="h-full">
+    <CardContent class="flex-1">
       <NuxtLink
-        class="flex flex-col space-y-3"
+        class="flex h-full flex-col space-y-3"
         :to="`/dashboard/link?slug=${link.slug}`"
       >
         <div class="flex items-center justify-center space-x-3">
@@ -60,6 +63,11 @@ function copyLink() {
               <div class="truncate leading-5 font-bold">
                 {{ host }}/{{ link.slug }}
               </div>
+              <Badge
+                v-if="link.unsafe" variant="destructive" class="ml-1 shrink-0"
+              >
+                <ShieldAlert class="h-3 w-3" />
+              </Badge>
 
               <Button
                 v-if="copied"
@@ -133,7 +141,7 @@ function copyLink() {
               class="w-auto p-0"
               :hide-when-detached="false"
             >
-              <LazyDashboardLinksEditor
+              <DashboardLinksEditor
                 :link="link"
               >
                 <div
@@ -149,11 +157,11 @@ function copyLink() {
                   />
                   {{ $t('common.edit') }}
                 </div>
-              </LazyDashboardLinksEditor>
+              </DashboardLinksEditor>
 
               <Separator />
 
-              <LazyDashboardLinksDelete
+              <DashboardLinksDelete
                 :link="link"
               >
                 <div
@@ -168,41 +176,66 @@ function copyLink() {
                     class="mr-2 h-5 w-5"
                   /> {{ $t('common.delete') }}
                 </div>
-              </LazyDashboardLinksDelete>
+              </DashboardLinksDelete>
             </PopoverContent>
           </Popover>
         </div>
-        <div class="flex h-5 w-full space-x-2 text-sm">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <span
-                  class="inline-flex items-center leading-5 whitespace-nowrap"
-                ><CalendarPlus2 aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.createdAt) }}</span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{{ $t('links.created_at') }}: {{ longDate(link.createdAt) }}</p>
-                <p>{{ $t('links.updated_at') }}: {{ longDate(link.updatedAt) }}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <template v-if="link.expiration">
-            <Separator orientation="vertical" />
+        <div class="mt-auto flex flex-col space-y-3">
+          <div class="flex h-5 w-full space-x-2 text-sm">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger as-child>
                   <span
                     class="inline-flex items-center leading-5 whitespace-nowrap"
-                  ><Hourglass aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.expiration) }}</span>
+                  ><CalendarPlus2 aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.createdAt) }}</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{{ $t('links.expires_at') }}: {{ longDate(link.expiration) }}</p>
+                  <p>{{ $t('links.created_at') }}: {{ longDate(link.createdAt) }}</p>
+                  <p>{{ $t('links.updated_at') }}: {{ longDate(link.updatedAt) }}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </template>
-          <Separator orientation="vertical" />
-          <span class="truncate">{{ link.url }}</span>
+            <template v-if="link.expiration">
+              <Separator orientation="vertical" />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <span
+                      class="
+                        inline-flex items-center leading-5 whitespace-nowrap
+                      "
+                    ><Hourglass aria-hidden="true" class="mr-1 h-4 w-4" /> {{ shortDate(link.expiration) }}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{{ $t('links.expires_at') }}: {{ longDate(link.expiration) }}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </template>
+            <Separator orientation="vertical" />
+            <span class="truncate">{{ link.url }}</span>
+          </div>
+          <div
+            v-if="countersMap" class="flex h-5 w-full space-x-2 text-sm"
+          >
+            <template v-if="counters">
+              <Badge variant="secondary">
+                <MousePointerClick aria-hidden="true" class="h-3.5 w-3.5" />
+                {{ counters.visits }}
+              </Badge>
+              <Badge variant="secondary">
+                <Users aria-hidden="true" class="h-3.5 w-3.5" />
+                {{ counters.visitors }}
+              </Badge>
+              <Badge variant="secondary">
+                <Flame aria-hidden="true" class="h-3.5 w-3.5" />
+                {{ counters.referers }}
+              </Badge>
+            </template>
+            <template v-else>
+              <Skeleton class="h-5 w-full rounded-full bg-secondary" />
+            </template>
+          </div>
         </div>
       </NuxtLink>
     </CardContent>

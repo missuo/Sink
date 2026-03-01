@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Link, LinkListResponse, LinkUpdateType } from '@/types'
+import type { CounterData, Link, LinkListResponse, LinkUpdateType } from '@/types'
 import { useInfiniteScroll } from '@vueuse/core'
 import { Loader } from 'lucide-vue-next'
 
@@ -10,6 +10,40 @@ const listComplete = ref(false)
 const listError = ref(false)
 const limit = 24
 let cursor = ''
+
+const countersMap = ref<Record<string, CounterData>>({})
+provide('linksCountersMap', countersMap)
+
+const pendingIds = new Set<string>()
+const defaultCounters: CounterData = Object.freeze({ visits: 0, visitors: 0, referers: 0 })
+
+async function fetchCounters(ids: string[]) {
+  if (!ids.length)
+    return
+  ids.forEach(id => pendingIds.add(id))
+  try {
+    const result = await useAPI<{ data: (CounterData & { id: string })[] }>('/api/stats/counters', {
+      query: { id: ids.join(',') },
+    })
+    for (const item of result.data ?? []) {
+      countersMap.value[item.id] = {
+        visits: item.visits,
+        visitors: item.visitors,
+        referers: item.referers,
+      }
+    }
+  }
+  catch (error) {
+    console.error('Failed to fetch counters:', error)
+  }
+  finally {
+    for (const id of ids) {
+      if (!countersMap.value[id])
+        countersMap.value[id] = { ...defaultCounters }
+      pendingIds.delete(id)
+    }
+  }
+}
 
 const scrollContainer = ref<HTMLElement | Window | null>(null)
 
@@ -41,10 +75,14 @@ async function getLinks() {
         cursor,
       },
     })
-    links.value = links.value.concat(data.links).filter(Boolean)
+    const newLinks = data.links.filter(Boolean)
+    links.value = links.value.concat(newLinks)
     cursor = data.cursor
     listComplete.value = data.list_complete
     listError.value = false
+
+    const ids = newLinks.map(l => l.id).filter(id => !countersMap.value[id] && !pendingIds.has(id))
+    fetchCounters(ids)
   }
   catch (error) {
     console.error(error)

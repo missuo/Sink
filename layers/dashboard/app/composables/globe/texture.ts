@@ -4,14 +4,23 @@ import type { GeoJSONData, LocationData } from '@/types'
 import { scaleThreshold } from 'd3-scale'
 
 // Hex grid constants (flat-top hexagons)
-// hexSize=9 gives ~40k hexes globally, close to H3 resolution 3
-const HEX_SIZE = 9
+// Base hexSize=9 is calibrated for 4096px texture width
+const BASE_HEX_SIZE = 9
+const BASE_TEXTURE_WIDTH = 4096
 const HEX_MARGIN = 0.2
 
 const HEX_ANGLES = Array.from({ length: 6 }, (_, i) => {
   const angle = (Math.PI / 3) * i
   return [Math.cos(angle), Math.sin(angle)] as const
 })
+
+type Canvas2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+
+function createCanvas(width: number, height: number): HTMLCanvasElement | OffscreenCanvas {
+  if (typeof OffscreenCanvas !== 'undefined')
+    return new OffscreenCanvas(width, height)
+  return Object.assign(document.createElement('canvas'), { width, height })
+}
 
 export async function createCountryTexture(
   gl: WebGLRenderingContext,
@@ -23,17 +32,17 @@ export async function createCountryTexture(
   locations: LocationData[],
   highest: number,
   heatmapTiers: HeatmapColorTiers,
+  containerSize: number,
 ): Promise<WebGLTexture | null> {
   const { geoPath, geoEquirectangular } = await import('d3-geo')
 
   const maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number
-  const width = Math.min(4096, maxSize)
+  const width = Math.min(containerSize * 2, maxSize)
   const height = width / 2
+  const hexSize = BASE_HEX_SIZE * (width / BASE_TEXTURE_WIDTH)
 
-  const canvas = document.createElement('canvas')
-  canvas.width = width
-  canvas.height = height
-  const ctx = canvas.getContext('2d')!
+  const canvas = createCanvas(width, height)
+  const ctx = canvas.getContext('2d')! as Canvas2D
 
   ctx.fillStyle = globeFill
   ctx.fillRect(0, 0, width, height)
@@ -45,10 +54,8 @@ export async function createCountryTexture(
   const pathGen = geoPath(projection)
 
   // Country lookup texture: each country drawn with unique color encoding its index
-  const lookupCanvas = document.createElement('canvas')
-  lookupCanvas.width = width
-  lookupCanvas.height = height
-  const lookupCtx = lookupCanvas.getContext('2d')!
+  const lookupCanvas = createCanvas(width, height)
+  const lookupCtx = lookupCanvas.getContext('2d')! as Canvas2D
 
   lookupCtx.fillStyle = 'rgb(0, 0, 0)'
   lookupCtx.fillRect(0, 0, width, height)
@@ -58,7 +65,7 @@ export async function createCountryTexture(
     const id = i + 1
     lookupCtx.fillStyle = `rgb(${id & 0xFF}, ${(id >> 8) & 0xFF}, 0)`
     lookupCtx.beginPath()
-    pathGen.context(lookupCtx)(features[i] as any)
+    pathGen.context(lookupCtx as any)(features[i] as any)
     lookupCtx.fill()
   }
 
@@ -78,27 +85,28 @@ export async function createCountryTexture(
   }
 
   // Generate hex grid grouped by color for batch rendering
-  drawHexGrid(ctx, width, height, lookupData, countryColorMap, tiers.noData)
+  drawHexGrid(ctx, width, height, hexSize, lookupData, countryColorMap, tiers.noData)
 
   // Heatmap overlay from location density
   if (locations.length > 0 && highest > 0) {
-    drawHeatmapHexes(ctx, width, height, projection, locations, highest, heatmapTiers)
+    drawHeatmapHexes(ctx, width, height, hexSize, projection, locations, highest, heatmapTiers)
   }
 
   return createGLTexture(gl, canvas)
 }
 
 function drawHexGrid(
-  ctx: CanvasRenderingContext2D,
+  ctx: Canvas2D,
   width: number,
   height: number,
+  hexSize: number,
   lookupData: Uint8ClampedArray,
   countryColorMap: Map<number, string>,
   noDataColor: string,
 ) {
-  const drawRadius = HEX_SIZE * (1 - HEX_MARGIN)
-  const colSpacing = 1.5 * HEX_SIZE
-  const rowSpacing = Math.sqrt(3) * HEX_SIZE
+  const drawRadius = hexSize * (1 - HEX_MARGIN)
+  const colSpacing = 1.5 * hexSize
+  const rowSpacing = Math.sqrt(3) * hexSize
   const halfRowSpacing = rowSpacing / 2
   const numCols = Math.ceil(width / colSpacing) + 1
   const numRows = Math.ceil(height / rowSpacing) + 1
@@ -138,17 +146,18 @@ function drawHexGrid(
 }
 
 function drawHeatmapHexes(
-  ctx: CanvasRenderingContext2D,
+  ctx: Canvas2D,
   width: number,
   height: number,
+  hexSize: number,
   projection: GeoProjection,
   locations: LocationData[],
   highest: number,
   heatmapTiers: HeatmapColorTiers,
 ) {
-  const drawRadius = HEX_SIZE * (1 - HEX_MARGIN)
-  const colSpacing = 1.5 * HEX_SIZE
-  const rowSpacing = Math.sqrt(3) * HEX_SIZE
+  const drawRadius = hexSize * (1 - HEX_MARGIN)
+  const colSpacing = 1.5 * hexSize
+  const rowSpacing = Math.sqrt(3) * hexSize
   const halfRowSpacing = rowSpacing / 2
 
   const projectedLocs: { px: number, py: number, count: number }[] = []
@@ -208,7 +217,7 @@ function drawHeatmapHexes(
 }
 
 // Batch-draw flat-top hexagons at given coordinates
-function drawHexBatch(ctx: CanvasRenderingContext2D, coords: number[], radius: number, color: string) {
+function drawHexBatch(ctx: Canvas2D, coords: number[], radius: number, color: string) {
   ctx.fillStyle = color
   ctx.beginPath()
   for (let i = 0; i < coords.length; i += 2) {
@@ -225,11 +234,11 @@ function drawHexBatch(ctx: CanvasRenderingContext2D, coords: number[], radius: n
   ctx.fill()
 }
 
-function createGLTexture(gl: WebGLRenderingContext, canvas: HTMLCanvasElement): WebGLTexture | null {
+function createGLTexture(gl: WebGLRenderingContext, canvas: HTMLCanvasElement | OffscreenCanvas): WebGLTexture | null {
   const texture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, texture)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas as TexImageSource)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)

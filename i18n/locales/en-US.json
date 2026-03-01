@@ -64,7 +64,8 @@
     "export": "Export",
     "coffee": "Buy me a coffee",
     "github": "GitHub",
-    "stars": "Stars"
+    "stars": "Stars",
+    "update": "New version {version} available (current: {current})"
   },
   "home": {
     "hero": {
@@ -232,6 +233,16 @@
       "device_redirect": "Device Redirect",
       "google_play": "Google Play URL",
       "app_store": "App Store URL",
+      "link_settings": "Link Settings",
+      "redirect_with_query_label": "Redirect with Query Parameters",
+      "redirect_with_query_description": "Append query parameters from the short link to the destination URL. Overrides global setting.",
+      "cloaking_label": "Enable Link Cloaking",
+      "cloaking_description": "Show your short link in the browser address bar instead of the destination URL. May not work for sites that block iframe embedding.",
+      "unsafe_label": "Mark as Unsafe",
+      "unsafe_description": "Show a warning page before redirecting. Visitors must confirm to continue.",
+      "password_label": "Password Protection",
+      "password_description": "Require a password to access this short link.",
+      "password_placeholder": "Leave empty to disable",
       "og_settings": "OpenGraph Settings",
       "og_title": "Title",
       "og_title_placeholder": "Leave empty to use URL hostname",
@@ -260,6 +271,14 @@
     "ai_slug_failed": "Failed to generate AI slug"
   },
   "migrate": {
+    "backup": {
+      "title": "Manual Backup",
+      "description": "Trigger a manual backup of all links to the configured R2 bucket",
+      "button": "Start Backup",
+      "backing_up": "Backing up...",
+      "success": "Backup successful",
+      "failed": "Backup failed"
+    },
     "export": {
       "title": "Export Links",
       "description": "Download all your links as a JSON file",

@@ -1,26 +1,18 @@
 <script setup lang="ts">
-import { useIntersectionObserver } from '@vueuse/core'
-
 const realtimeStore = useDashboardRealtimeStore()
 
-const globeContainer = useTemplateRef('globeContainer')
 const showGlobe = ref(false)
 
-const { stop } = useIntersectionObserver(
-  globeContainer,
-  async ([entry]) => {
-    if (entry?.isIntersecting) {
-      await nextTick()
-      showGlobe.value = true
-      stop()
-    }
-  },
-  { threshold: 0.1 },
-)
+const rIC = window.requestIdleCallback || ((cb: IdleRequestCallback) => setTimeout(cb, 50))
 
 onBeforeMount(() => {
-  realtimeStore.restoreFromUrl()
-  realtimeStore.initDefaultTimeRange()
+  realtimeStore.init()
+})
+
+onMounted(() => {
+  rIC(() => {
+    showGlobe.value = true
+  })
 })
 </script>
 
@@ -38,7 +30,6 @@ onBeforeMount(() => {
       "
     />
     <div
-      ref="globeContainer"
       class="
         aspect-square
         md:absolute md:inset-0 md:aspect-auto

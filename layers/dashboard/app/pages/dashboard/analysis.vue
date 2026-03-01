@@ -7,10 +7,6 @@ provide(LINK_ID_KEY, computed(() => undefined))
 
 const analysisStore = useDashboardAnalysisStore()
 
-function handleDateChange(dateRange: [number, number]) {
-  analysisStore.updateDateRange(dateRange)
-}
-
 function handleFilterChange(type: string, value: string) {
   analysisStore.updateFilter(type, value)
 }
@@ -25,8 +21,8 @@ function handleFilterChange(type: string, value: string) {
           sm:hidden
         "
       />
-      <DashboardDatePicker @update:date-range="handleDateChange" />
-      <DashboardFilters @change="handleFilterChange" />
+      <DashboardDatePicker />
+      <DashboardFilters :filters="analysisStore.filters" @change="handleFilterChange" />
     </Teleport>
 
     <DashboardAnalysis />

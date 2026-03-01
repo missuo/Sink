@@ -37,6 +37,10 @@ const form = useForm({
     title: props.link.title ?? '',
     description: props.link.description ?? '',
     image: props.link.image ?? '',
+    cloaking: props.link.cloaking ?? false,
+    redirectWithQuery: props.link.redirectWithQuery ?? false,
+    password: props.link.password ?? '',
+    unsafe: props.link.unsafe ?? false,
   } satisfies LinkFormData,
   onSubmit: async ({ value }) => {
     try {
@@ -52,6 +56,10 @@ const form = useForm({
         title: value.title || undefined,
         description: value.description || undefined,
         image: value.image || undefined,
+        cloaking: value.cloaking,
+        redirectWithQuery: value.redirectWithQuery,
+        password: value.password || undefined,
+        unsafe: value.unsafe || undefined,
       }
       const { link: newLink } = await useAPI<{ link: Link }>(
         props.isEdit ? '/api/link/edit' : '/api/link/create',

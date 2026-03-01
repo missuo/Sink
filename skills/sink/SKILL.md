@@ -44,7 +44,9 @@ Content-Type: application/json
 ```
 
 **Required**: `url`
-**Optional**: `slug` (auto-generated if omitted), `comment`, `expiration` (unix timestamp), `apple` (iOS redirect), `google` (Android redirect)
+**Optional**: `slug` (auto-generated if omitted), `comment`, `expiration` (unix timestamp), `apple` (iOS redirect), `google` (Android redirect), `password`, `unsafe`, `title`, `description`, `image`, `cloaking`, `redirectWithQuery`
+
+> If `NUXT_SAFE_BROWSING_DOH` is configured and `unsafe` is not explicitly set, the server auto-detects via DoH and marks unsafe links automatically.
 
 **Response** (201):
 
@@ -206,17 +208,21 @@ Verify if the site token is valid.
 
 ## Link Fields
 
-| Field         | Type   | Required | Description                  |
-| ------------- | ------ | -------- | ---------------------------- |
-| `url`         | string | Yes      | Target URL (max 2048)        |
-| `slug`        | string | No       | Custom slug (auto-generated) |
-| `comment`     | string | No       | Internal note                |
-| `expiration`  | number | No       | Unix timestamp               |
-| `apple`       | string | No       | iOS/macOS redirect URL       |
-| `google`      | string | No       | Android redirect URL         |
-| `title`       | string | No       | Custom title (max 256)       |
-| `description` | string | No       | Custom description           |
-| `image`       | string | No       | Custom image path            |
+| Field               | Type    | Required | Description                                                                          |
+| ------------------- | ------- | -------- | ------------------------------------------------------------------------------------ |
+| `url`               | string  | Yes      | Target URL (max 2048)                                                                |
+| `slug`              | string  | No       | Custom slug (auto-generated)                                                         |
+| `comment`           | string  | No       | Internal note                                                                        |
+| `expiration`        | number  | No       | Unix timestamp                                                                       |
+| `apple`             | string  | No       | iOS/macOS redirect URL                                                               |
+| `google`            | string  | No       | Android redirect URL                                                                 |
+| `title`             | string  | No       | Custom title (max 256)                                                               |
+| `description`       | string  | No       | Custom description                                                                   |
+| `image`             | string  | No       | Custom image path                                                                    |
+| `cloaking`          | boolean | No       | Enable link cloaking                                                                 |
+| `redirectWithQuery` | boolean | No       | Append query params to destination URL (overrides global `NUXT_REDIRECT_WITH_QUERY`) |
+| `password`          | string  | No       | Password protection for the link                                                     |
+| `unsafe`            | boolean | No       | Mark as unsafe (shows warning page before redirect)                                  |
 
 ## Analytics Endpoints
 

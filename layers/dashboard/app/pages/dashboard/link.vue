@@ -7,11 +7,6 @@ definePageMeta({
 
 const slug = useRoute().query.slug
 const linksStore = useDashboardLinksStore()
-const analysisStore = useDashboardAnalysisStore()
-
-function handleDateChange(dateRange: [number, number]) {
-  analysisStore.updateDateRange(dateRange)
-}
 
 const link = ref<Link | null>(null)
 const id = computed(() => link.value?.id)
@@ -51,7 +46,7 @@ linksStore.onLinkUpdate(({ link: updatedLink, type }) => {
           sm:hidden
         "
       />
-      <DashboardDatePicker @update:date-range="handleDateChange" />
+      <DashboardDatePicker />
     </Teleport>
 
     <DashboardLinksLink

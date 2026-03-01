@@ -79,17 +79,21 @@ Content-Type: application/json
 
 ## Request Body Fields
 
-| Field           | Type     | Required | Description                             |
-| --------------- | -------- | -------- | --------------------------------------- |
-| `url`           | `string` | ✅       | Target URL (max 2048 chars)             |
-| `slug`          | `string` | ❌       | Custom slug (auto-generated if omitted) |
-| `comment`       | `string` | ❌       | Internal note for the link              |
-| `expiration`    | `string` | ❌       | ISO 8601 expiration date                |
-| `ios`           | `string` | ❌       | iOS/macOS redirect URL                  |
-| `android`       | `string` | ❌       | Android redirect URL                    |
-| `ogTitle`       | `string` | ❌       | OpenGraph title                         |
-| `ogDescription` | `string` | ❌       | OpenGraph description                   |
-| `ogImage`       | `string` | ❌       | OpenGraph image URL                     |
+| Field               | Type      | Required | Description                                                           |
+| ------------------- | --------- | -------- | --------------------------------------------------------------------- |
+| `url`               | `string`  | ✅       | Target URL (max 2048 chars)                                           |
+| `slug`              | `string`  | ❌       | Custom slug (auto-generated if omitted)                               |
+| `comment`           | `string`  | ❌       | Internal note for the link                                            |
+| `expiration`        | `string`  | ❌       | ISO 8601 expiration date                                              |
+| `ios`               | `string`  | ❌       | iOS/macOS redirect URL                                                |
+| `android`           | `string`  | ❌       | Android redirect URL                                                  |
+| `ogTitle`           | `string`  | ❌       | OpenGraph title                                                       |
+| `ogDescription`     | `string`  | ❌       | OpenGraph description                                                 |
+| `ogImage`           | `string`  | ❌       | OpenGraph image URL                                                   |
+| `cloaking`          | `boolean` | ❌       | Enable link cloaking (mask destination URL with short link)           |
+| `redirectWithQuery` | `boolean` | ❌       | Append query parameters to destination URL (overrides global setting) |
+| `password`          | `string`  | ❌       | Password protection for the link                                      |
+| `unsafe`            | `boolean` | ❌       | Mark link as unsafe (shows warning page before redirect)              |
 
 ## CORS
 

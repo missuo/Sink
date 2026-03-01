@@ -32,6 +32,9 @@ const defaultOpenItems = computed(() => {
   if (props.form.getFieldValue('google') || props.form.getFieldValue('apple')) {
     items.push('device')
   }
+  if (props.form.getFieldValue('cloaking') || props.form.getFieldValue('redirectWithQuery') || props.form.getFieldValue('password') || props.form.getFieldValue('unsafe')) {
+    items.push('link_settings')
+  }
   return items
 })
 </script>
@@ -128,6 +131,94 @@ const defaultOpenItems = computed(() => {
                 :model-value="field.state.value"
                 :slug="currentSlug"
                 @update:model-value="field.handleChange($event || '')"
+              />
+            </Field>
+          </props.form.Field>
+        </FieldGroup>
+      </AccordionContent>
+    </AccordionItem>
+
+    <AccordionItem value="link_settings">
+      <AccordionTrigger>{{ $t('links.form.link_settings') }}</AccordionTrigger>
+      <AccordionContent class="px-1">
+        <FieldGroup>
+          <props.form.Field v-slot="{ field }" name="redirectWithQuery">
+            <Field>
+              <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <FieldLabel :for="field.name">
+                    {{ $t('links.form.redirect_with_query_label') }}
+                  </FieldLabel>
+                  <p class="text-xs text-muted-foreground">
+                    {{ $t('links.form.redirect_with_query_description') }}
+                  </p>
+                </div>
+                <Switch
+                  :id="field.name"
+                  :model-value="field.state.value"
+                  @update:model-value="field.handleChange"
+                />
+              </div>
+            </Field>
+          </props.form.Field>
+
+          <props.form.Field v-slot="{ field }" name="cloaking">
+            <Field>
+              <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <FieldLabel :for="field.name">
+                    {{ $t('links.form.cloaking_label') }}
+                  </FieldLabel>
+                  <p class="text-xs text-muted-foreground">
+                    {{ $t('links.form.cloaking_description') }}
+                  </p>
+                </div>
+                <Switch
+                  :id="field.name"
+                  :model-value="field.state.value"
+                  @update:model-value="field.handleChange"
+                />
+              </div>
+            </Field>
+          </props.form.Field>
+
+          <props.form.Field v-slot="{ field }" name="unsafe">
+            <Field>
+              <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <FieldLabel :for="field.name">
+                    {{ $t('links.form.unsafe_label') }}
+                  </FieldLabel>
+                  <p class="text-xs text-muted-foreground">
+                    {{ $t('links.form.unsafe_description') }}
+                  </p>
+                </div>
+                <Switch
+                  :id="field.name"
+                  :model-value="field.state.value"
+                  @update:model-value="field.handleChange"
+                />
+              </div>
+            </Field>
+          </props.form.Field>
+
+          <props.form.Field v-slot="{ field }" name="password">
+            <Field>
+              <FieldLabel :for="field.name">
+                {{ $t('links.form.password_label') }}
+              </FieldLabel>
+              <p class="text-xs text-muted-foreground">
+                {{ $t('links.form.password_description') }}
+              </p>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :placeholder="$t('links.form.password_placeholder')"
+                autocomplete="off"
+                class="mt-1.5"
+                @blur="field.handleBlur"
+                @input="field.handleChange(($event.target as HTMLInputElement).value)"
               />
             </Field>
           </props.form.Field>

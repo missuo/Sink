@@ -64,7 +64,8 @@
     "export": "Exportieren",
     "coffee": "Kauf mir einen Kaffee",
     "github": "GitHub",
-    "stars": "Stars"
+    "stars": "Stars",
+    "update": "Neue Version {version} verfügbar (aktuell: {current})"
   },
   "home": {
     "hero": {
@@ -232,6 +233,16 @@
       "device_redirect": "Geräteweiterleitung",
       "google_play": "Google Play URL",
       "app_store": "App Store URL",
+      "link_settings": "Link-Einstellungen",
+      "redirect_with_query_label": "Mit Query-Parametern weiterleiten",
+      "redirect_with_query_description": "Query-Parameter des Kurzlinks an die Ziel-URL anhängen. Überschreibt die globale Einstellung.",
+      "cloaking_label": "Link-Cloaking aktivieren",
+      "cloaking_description": "Zeigt Ihren Kurzlink in der Adressleiste des Browsers anstelle der Ziel-URL an. Funktioniert möglicherweise nicht bei Websites, die iframe-Einbettung blockieren.",
+      "unsafe_label": "Als unsicher markieren",
+      "unsafe_description": "Vor der Weiterleitung eine Warnseite anzeigen. Besucher müssen bestätigen, um fortzufahren.",
+      "password_label": "Passwortschutz",
+      "password_description": "Passwort zum Zugriff auf diesen Kurzlink erforderlich.",
+      "password_placeholder": "Leer lassen zum Deaktivieren",
       "og_settings": "OpenGraph-Einstellungen",
       "og_title": "Titel",
       "og_title_placeholder": "Leer lassen, um den URL-Hostnamen zu verwenden",
@@ -260,6 +271,14 @@
     "ai_slug_failed": "KI-Slug konnte nicht generiert werden"
   },
   "migrate": {
+    "backup": {
+      "title": "Manuelles Backup",
+      "description": "Löse eine manuelle Sicherung aller Links auf dem konfigurierten R2-Bucket aus",
+      "button": "Sicherung starten",
+      "backing_up": "Sichere...",
+      "success": "Sicherung erfolgreich",
+      "failed": "Sicherung fehlgeschlagen"
+    },
     "export": {
       "title": "Links exportieren",
       "description": "Laden Sie alle Links als JSON-Datei herunter",

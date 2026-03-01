@@ -5,10 +5,6 @@ definePageMeta({
 
 const realtimeStore = useDashboardRealtimeStore()
 
-function handleTimeChange(timeRange: [number, number], timeName?: string) {
-  realtimeStore.updateTimeRange(timeRange, timeName)
-}
-
 function handleFilterChange(type: string, value: string) {
   realtimeStore.updateFilter(type, value)
 }
@@ -28,10 +24,10 @@ function handleFilterChange(type: string, value: string) {
           sm:hidden
         "
       />
-      <DashboardTimePicker @update:time-range="handleTimeChange" />
-      <DashboardFilters @change="handleFilterChange" />
+      <DashboardTimePicker />
+      <DashboardFilters :filters="realtimeStore.filters" @change="handleFilterChange" />
     </Teleport>
 
-    <LazyDashboardRealtime />
+    <DashboardRealtime />
   </main>
 </template>

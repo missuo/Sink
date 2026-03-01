@@ -2,14 +2,14 @@ import type { Query } from '#shared/schemas/query'
 import type { SelectStatement } from 'sql-bricks'
 import type { BlobsKey } from './access-log'
 
-const { in: $in, and, eq } = SqlBricks
+const { in: $in, and } = SqlBricks
 
 export type { Query }
 
 export function query2filter(query: Query) {
   const filter = []
   if (query.id)
-    filter.push(eq('index1', query.id))
+    filter.push($in('index1', query.id.split(',').filter(Boolean)))
 
   const blobKeys = Object.keys(blobsMap) as BlobsKey[]
   for (const blobKey of blobKeys) {

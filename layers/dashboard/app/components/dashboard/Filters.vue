@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { Link } from '@/types'
-import { createReusableTemplate, useMediaQuery, useUrlSearchParams, watchDebounced } from '@vueuse/core'
-import { safeDestr } from 'destr'
+import { createReusableTemplate, useMediaQuery, watchDebounced } from '@vueuse/core'
 import { Check, ChevronsUpDown } from 'lucide-vue-next'
 import { VList } from 'virtua/vue'
 import { cn } from '@/lib/utils'
+
+const props = defineProps<{
+  filters?: Record<string, string>
+}>()
 
 const emit = defineEmits<{
   change: [key: string, value: string]
@@ -17,7 +20,15 @@ const isDesktop = useMediaQuery('(min-width: 640px)')
 
 const links = ref<Link[]>([])
 const isOpen = ref(false)
-const selectedLinks = ref<string[]>([])
+const selectedLinks = ref<string[]>(props.filters?.slug?.split(',').filter(Boolean) ?? [])
+
+// Sync selectedLinks when props.filters changes (e.g., store restore/clear)
+watch(() => props.filters?.slug, (newSlug) => {
+  const newValue = newSlug?.split(',').filter(Boolean) ?? []
+  if (JSON.stringify(newValue) !== JSON.stringify(selectedLinks.value)) {
+    selectedLinks.value = newValue
+  }
+})
 
 async function getLinks() {
   try {
@@ -35,20 +46,6 @@ onMounted(() => {
 watchDebounced(selectedLinks, (value) => {
   emit('change', 'slug', value.join(','))
 }, { debounce: 500, maxWait: 1000 })
-
-function restoreFilters() {
-  const searchParams = useUrlSearchParams('history')
-  if (searchParams.filters) {
-    const filters = safeDestr<{ slug?: string }>(searchParams.filters as string)
-    if (filters.slug) {
-      selectedLinks.value = filters.slug.split(',')
-    }
-  }
-}
-
-onBeforeMount(() => {
-  restoreFilters()
-})
 </script>
 
 <template>

@@ -3,7 +3,7 @@ import type { ArcData, RippleData, WebGLGlobeContext } from './types'
 import * as twgl from 'twgl.js'
 import { ref, shallowRef } from 'vue'
 import { parseColor } from './color'
-import { createArcGeometry, createOctahedronSphere, latLngToXYZ } from './geometry'
+import { createArcGeometry, latLngToXYZ } from './geometry'
 import { setupGlobeInteraction } from './interaction'
 import {
   arcFragmentShader,
@@ -102,8 +102,8 @@ export function useWebGLGlobe(ctx: WebGLGlobeContext) {
   let rippleBufferInfo: twgl.BufferInfo | null = null
   const ripplePositionData = new Float32Array(3)
 
-  // Precomputed geometry
-  const sphereGeometry = createOctahedronSphere(6)
+  // Sphere geometry (loaded async from prebuilt binary)
+  let sphereGeometry: { position: Float32Array, texcoord: Float32Array, indices: Uint16Array } | null = null
 
   // Texture cache version
   let lastTextureVersion = -1
@@ -144,6 +144,19 @@ export function useWebGLGlobe(ctx: WebGLGlobeContext) {
     const canvas = ctx.canvasRef.value
     if (!canvas)
       return false
+
+    // Load prebuilt sphere geometry
+    if (!sphereGeometry) {
+      const buf = await $fetch<ArrayBuffer>('/sphere.bin', { responseType: 'arrayBuffer' })
+      const header = new Uint32Array(buf, 0, 3)
+      let offset = 12
+      const position = new Float32Array(buf, offset, header[0]! / 4)
+      offset += header[0]!
+      const texcoord = new Float32Array(buf, offset, header[1]! / 4)
+      offset += header[1]!
+      const indices = new Uint16Array(buf, offset, header[2]! / 2)
+      sphereGeometry = { position, texcoord, indices }
+    }
 
     gl = canvas.getContext('webgl', { alpha: true, antialias: true })
     if (!gl) {
@@ -203,6 +216,18 @@ export function useWebGLGlobe(ctx: WebGLGlobeContext) {
     if (!gl || !isReady.value)
       return
 
+    const containerSize = Math.max(ctx.width.value, ctx.height.value)
+    if (containerSize < 1) {
+      // Retry once when container size becomes available
+      const unwatch = watch([ctx.width, ctx.height], () => {
+        if (Math.max(ctx.width.value, ctx.height.value) >= 1) {
+          unwatch()
+          updateCountryTexture()
+        }
+      })
+      return
+    }
+
     const currentVersion = ++textureVersion
     lastTextureVersion = currentVersion
 
@@ -228,6 +253,7 @@ export function useWebGLGlobe(ctx: WebGLGlobeContext) {
       locs,
       high,
       heatTiers,
+      containerSize,
     )
 
     // Guard: gl may have been destroyed during async texture creation
